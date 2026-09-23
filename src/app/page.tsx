@@ -147,11 +147,11 @@ export default function Home() {
             <div className="search-panel">
               <label className="search-control search-wide">
                 <span>Doctor, specialty or hospital</span>
-                <div><Search size={20} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="e.g. General Medicine or PIMS" /></div>
+                <div><Search size={20} /><input suppressHydrationWarning value={query} onChange={(event) => setQuery(event.target.value)} placeholder="e.g. General Medicine or PIMS" /></div>
               </label>
               <label className="search-control">
                 <span>City</span>
-                <div><MapPin size={20} /><select value={city} onChange={(event) => setCity(event.target.value)}><option>All cities</option>{pilotCities.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={16} /></div>
+                <div><MapPin size={20} /><select suppressHydrationWarning value={city} onChange={(event) => setCity(event.target.value)}><option>All cities</option>{pilotCities.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={16} /></div>
               </label>
               <button className="primary-button" type="button" onClick={searchDirectory}><Search size={18} /> Find doctors</button>
             </div>
@@ -196,9 +196,9 @@ export default function Home() {
           )}
 
           <div className="filter-bar">
-            <label><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name, facility or address" /></label>
-            <label><MapPin size={17} /><select value={city} onChange={(event) => setCity(event.target.value)}><option>All cities</option>{pilotCities.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={14} /></label>
-            <label><Stethoscope size={17} /><select value={specialty} onChange={(event) => setSpecialty(event.target.value)}><option>All specialties</option>{specialties.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={14} /></label>
+            <label><Search size={18} /><input suppressHydrationWarning value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name, facility or address" /></label>
+            <label><MapPin size={17} /><select suppressHydrationWarning value={city} onChange={(event) => setCity(event.target.value)}><option>All cities</option>{pilotCities.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={14} /></label>
+            <label><Stethoscope size={17} /><select suppressHydrationWarning value={specialty} onChange={(event) => setSpecialty(event.target.value)}><option>All specialties</option>{specialties.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={14} /></label>
             <div className="verified-filter"><BadgeCheck size={17} /> PMDC verified only</div>
           </div>
 
