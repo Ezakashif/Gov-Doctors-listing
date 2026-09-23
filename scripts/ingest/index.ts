@@ -1,9 +1,12 @@
+import type { WebSocketLikeConstructor } from "@supabase/realtime-js";
 import { createClient } from "@supabase/supabase-js";
+import WebSocket from "ws";
 import { FixtureSourceAdapter } from "./fixture-adapter";
 import { normalizeRecord } from "./normalize";
 import { upsertVerifiedRecord } from "./repository";
 import type { IngestionSummary, NormalizedDoctorRecord } from "./types";
 
+const nodeWebSocket = WebSocket as unknown as WebSocketLikeConstructor;
 const commit = process.argv.includes("--commit");
 const adapter = new FixtureSourceAdapter();
 
@@ -45,6 +48,7 @@ async function run() {
 
   const supabase = createClient(url, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
+    realtime: { transport: nodeWebSocket },
   });
 
   const { data: runData, error: runError } = await supabase

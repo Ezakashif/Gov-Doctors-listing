@@ -11,9 +11,17 @@ export type PublicDoctor = {
   officialPhone: string;
   availabilityNote: string;
   pmdcVerified: true;
+  pmdcRegistrationNumber?: string;
+  pmdcStatus?: "valid";
+  pmdcValidUntil?: string | null;
   governmentEmploymentVerified: true;
+  governmentStatus?: "government_current_verified";
+  hajjAttestationStatus?: "verified";
+  district?: string | null;
+  tehsil?: string | null;
   sourceName: string;
   sourceUrl: string;
+  sourceDocumentDate?: string | null;
   lastVerifiedAt: string;
 };
 

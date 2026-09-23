@@ -8,6 +8,9 @@
 # production
 /build
 
+# Supabase CLI
+/supabase/.temp/
+
 # local environment files
 .env*
 !.env.example

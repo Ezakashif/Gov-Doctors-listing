@@ -7,7 +7,10 @@ The initial pilot covers Islamabad, Lahore, Karachi, and Peshawar. A doctor is p
 1. Their government employment/posting is supported by an attributable source.
 2. Their PMDC registration is valid when checked.
 
-PMDC registration numbers are private matching keys. They are never returned by the public API or rendered in the website.
+PMDC registration numbers are used as authoritative professional identifiers.
+They are returned publicly only for records with an unambiguous official PMDC
+match, valid registration, verified current government posting, and verified
+Hajj-attestation status.
 
 ## Run locally
 
@@ -26,13 +29,16 @@ Open [http://localhost:3000](http://localhost:3000). Without Supabase credential
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+SUPABASE_DB_URL=your-session-pooler-uri
 ```
 
 The service-role key is server-only. Never prefix it with `NEXT_PUBLIC_` or expose it to client code.
 
-The public interface reads only `public_doctor_directory`. The view contains no PMDC registration number and includes only records that pass both verification checks.
+The public interface reads only `public_doctor_directory`. The view includes a
+PMDC number only after an unambiguous official match and only for records that
+also pass current government-employment, facility, and Hajj-attestation checks.
 
 ## Automated ingestion
 
@@ -58,10 +64,55 @@ npm run ingest:commit
 
 The included fixtures are not real public records. Future API, HTML, or PDF adapters must be backed by attributable public government sources and comply with source terms and permissions. Do not automate PMDC queries without approved access.
 
+## KP historical pilot
+
+The first real-data pilot contains 25 records extracted from the official
+**KP Health Department — Tentative Seniority List Medical Officers BS-17**,
+as stood on 1 May 2024.
+
+```bash
+npm run ingest:kp-pilot:dry
+npm run ingest:kp-pilot
+npm run verify:kp-pilot
+```
+
+The importer is idempotent and matches repeat runs using the source ID and
+source record key. These records prove historical appearance in a government
+service document only. They are imported with:
+
+- `government_record_historical`;
+- `needs_review`;
+- `not_verified` Hajj-attestation status;
+- no guessed PMDC registration number;
+- no public visibility.
+
+The private `doctor_review_queue` view contains records requiring PMDC matching,
+current-posting confirmation, or facility-address review. The internal review
+console at `/review` is token-gated by `REVIEW_ACCESS_TOKEN` and uses
+service-role APIs only.
+
+```bash
+npm run db:push
+npm run review:pmdc:seed
+npm run review:pmdc:demo
+npm run verify:pmdc-review
+```
+
+PMDC matching is a manual review against the official public register at
+[pmdc.pk](https://pmdc.pk/). There is no officially documented bulk API, and
+the previously observed search endpoint does not reliably apply combined
+full-name + father-name filters. Trusted PMDC fields are written only after an
+explicit `verified` decision. Unmatched, ambiguous, needs-more-information, and
+rejected decisions keep candidate numbers untrusted and do not publish the
+doctor.
+
+Six facilities in the pilot have addresses supported by official facility or
+government sources. Unconfirmed addresses and phone numbers remain `NULL`.
+
 ## Publication and privacy rules
 
 - Publish only verified government medical doctors with a valid PMDC status.
-- Display a “PMDC verified” badge, never the PMDC number.
+- Display the PMDC number only after an unambiguous official match.
 - Publish official facility addresses and switchboards, not private contact details.
 - Retain source URLs, evidence timestamps, and verification history internally.
 - Hide expired, disputed, stale, or unverifiable records.

@@ -85,6 +85,7 @@ export default function Home() {
           doctor.name,
           doctor.designation,
           doctor.specialty,
+          doctor.pmdcRegistrationNumber ?? "",
           doctor.facilityName,
           doctor.address,
         ].some((value) => value.toLowerCase().includes(needle));
@@ -159,7 +160,7 @@ export default function Home() {
             <div className="hero-notes">
               <span><CheckCircle2 size={16} /> Valid PMDC registration checked</span>
               <span><CheckCircle2 size={16} /> Government posting checked</span>
-              <span><CheckCircle2 size={16} /> PMDC numbers kept private</span>
+              <span><CheckCircle2 size={16} /> PMDC number shown only after verification</span>
             </div>
           </div>
 
@@ -222,6 +223,9 @@ export default function Home() {
                   <span><Building2 size={15} /> Government posting verified</span>
                 </div>
                 <div className="doctor-details">
+                  {doctor.pmdcRegistrationNumber && (
+                    <div><BadgeCheck size={18} /><span><small>PMDC REGISTRATION</small><strong>{doctor.pmdcRegistrationNumber}</strong><em>Status: Valid{doctor.pmdcValidUntil ? ` until ${formatDate(doctor.pmdcValidUntil)}` : ""}</em></span></div>
+                  )}
                   <div><Building2 size={18} /><span><small>GOVERNMENT FACILITY</small><strong>{doctor.facilityName}</strong><em>{doctor.facilityType}</em></span></div>
                   <div><MapPin size={18} /><span><small>ADDRESS</small><strong>{doctor.address}</strong></span></div>
                   <div><Phone size={18} /><span><small>OFFICIAL SWITCHBOARD</small><strong>{doctor.officialPhone}</strong></span></div>
@@ -266,7 +270,7 @@ export default function Home() {
             <h2>Two checks before a doctor appears</h2>
             <p>Registration and employment are different facts. We verify them independently and keep the evidence attached to each internal record.</p>
             <div className="standard-step"><span>01</span><div><b>Government source check</b><p>A public hospital or health-department source must support the doctor’s current posting.</p></div></div>
-            <div className="standard-step"><span>02</span><div><b>PMDC validity check</b><p>The registration must be valid when checked. The registration number is retained internally and never displayed.</p></div></div>
+            <div className="standard-step"><span>02</span><div><b>PMDC validity check</b><p>The registration number is published only after an unambiguous official PMDC match confirms that it is valid.</p></div></div>
             <div className="standard-step"><span>03</span><div><b>Ongoing review</b><p>Stale, disputed, or failed records are hidden until they can be verified again.</p></div></div>
           </div>
           <aside className="independence-card">
@@ -309,6 +313,9 @@ export default function Home() {
             <h2>{selectedDoctor.name}</h2>
             <p className="modal-role">{selectedDoctor.designation} · {selectedDoctor.specialty}</p>
             <div className="modal-info">
+              {selectedDoctor.pmdcRegistrationNumber && (
+                <div><BadgeCheck /><span><small>PMDC REGISTRATION</small><strong>{selectedDoctor.pmdcRegistrationNumber}</strong><em>Status: Valid{selectedDoctor.pmdcValidUntil ? ` until ${formatDate(selectedDoctor.pmdcValidUntil)}` : ""}</em></span></div>
+              )}
               <div><Building2 /><span><small>GOVERNMENT FACILITY</small><strong>{selectedDoctor.facilityName}</strong><em>{selectedDoctor.facilityType}</em></span></div>
               <div><MapPin /><span><small>ADDRESS</small><strong>{selectedDoctor.address}</strong></span></div>
               <div><Phone /><span><small>OFFICIAL SWITCHBOARD</small><strong>{selectedDoctor.officialPhone}</strong></span></div>
@@ -316,7 +323,9 @@ export default function Home() {
             </div>
             <div className="confirm-note"><CircleAlert size={19} /><span><b>Call before travelling.</b>{selectedDoctor.availabilityNote}</span></div>
             <div className="modal-actions">
-              <a href={`tel:${selectedDoctor.officialPhone.replace(/\s/g, "")}`}><Phone size={17} /> Call facility</a>
+              {selectedDoctor.officialPhone !== "Not available" && (
+                <a href={`tel:${selectedDoctor.officialPhone.replace(/\s/g, "")}`}><Phone size={17} /> Call facility</a>
+              )}
               {selectedDoctor.sourceUrl ? <a className="secondary" href={selectedDoctor.sourceUrl} target="_blank" rel="noreferrer">View source <ExternalLink size={16} /></a> : <span className="source-label">{selectedDoctor.sourceName}</span>}
             </div>
           </div>

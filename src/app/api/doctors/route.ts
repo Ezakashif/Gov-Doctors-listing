@@ -11,17 +11,24 @@ type DirectoryRow = {
   full_name: string;
   designation: string;
   specialty: string;
+  qualification: string | null;
+  pmdc_registration_number: string;
+  pmdc_status: "valid";
+  pmdc_valid_until: string | null;
+  government_employment_status: "government_current_verified";
+  hajj_attestation_status: "verified";
   facility_name: string;
   facility_type: string;
-  address: string;
-  city: string;
+  address: string | null;
+  city: string | null;
   province: string;
-  official_phone: string;
+  district: string | null;
+  tehsil: string | null;
+  official_phone: string | null;
   availability_note: string;
-  pmdc_verified: true;
-  government_employment_verified: true;
   source_name: string;
   source_url: string;
+  source_document_date: string | null;
   last_verified_at: string;
 };
 
@@ -30,17 +37,25 @@ const toPublicDoctor = (row: DirectoryRow): PublicDoctor => ({
   name: row.full_name,
   designation: row.designation,
   specialty: row.specialty,
+  pmdcRegistrationNumber: row.pmdc_registration_number,
+  pmdcStatus: row.pmdc_status,
+  pmdcValidUntil: row.pmdc_valid_until,
   facilityName: row.facility_name,
   facilityType: row.facility_type,
-  address: row.address,
-  city: row.city,
+  address: row.address ?? "Address pending verification",
+  city: row.city ?? row.district ?? "Location pending verification",
   province: row.province,
-  officialPhone: row.official_phone,
+  district: row.district,
+  tehsil: row.tehsil,
+  officialPhone: row.official_phone ?? "Not available",
   availabilityNote: row.availability_note,
-  pmdcVerified: row.pmdc_verified,
-  governmentEmploymentVerified: row.government_employment_verified,
+  pmdcVerified: true,
+  governmentEmploymentVerified: true,
+  governmentStatus: row.government_employment_status,
+  hajjAttestationStatus: row.hajj_attestation_status,
   sourceName: row.source_name,
   sourceUrl: row.source_url,
+  sourceDocumentDate: row.source_document_date,
   lastVerifiedAt: row.last_verified_at,
 });
 
@@ -51,7 +66,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("public_doctor_directory")
       .select(
-        "id,full_name,designation,specialty,facility_name,facility_type,address,city,province,official_phone,availability_note,pmdc_verified,government_employment_verified,source_name,source_url,last_verified_at",
+        "id,full_name,designation,specialty,qualification,pmdc_registration_number,pmdc_status,pmdc_valid_until,government_employment_status,hajj_attestation_status,facility_name,facility_type,address,city,province,district,tehsil,official_phone,availability_note,source_name,source_url,source_document_date,last_verified_at",
       )
       .order("city")
       .order("full_name");
