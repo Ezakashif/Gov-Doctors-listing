@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sehat Duty Pakistan — Find doctors on duty",
+  title: "Sehat Directory Pakistan — Find a verified government doctor",
   description:
-    "A trusted directory for finding verified government doctors currently on duty across Pakistan.",
+    "An independent directory for locating PMDC-verified government doctors for Hajj medical forms.",
 };
 
 export default function RootLayout({

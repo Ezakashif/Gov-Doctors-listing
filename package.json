@@ -7,9 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "ingest:dry": "tsx scripts/ingest/index.ts",
+    "ingest:commit": "tsx scripts/ingest/index.ts --commit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
     "lucide-react": "^1.47.0",
     "next": "^16.3.6",
     "react": "^19.3.0",
@@ -23,6 +26,7 @@
     "eslint": "^9.36.0",
     "eslint-config-next": "^16.3.6",
     "tailwindcss": "^4.1.13",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.2"
   }
 }

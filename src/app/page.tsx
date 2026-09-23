@@ -4,197 +4,129 @@ import {
   ArrowRight,
   BadgeCheck,
   Building2,
-  CalendarClock,
-  Check,
+  CheckCircle2,
   ChevronDown,
-  CircleCheck,
-  Clock3,
+  CircleAlert,
+  Database,
+  ExternalLink,
+  FileCheck2,
   HeartPulse,
   Languages,
-  LocateFixed,
   MapPin,
   Menu,
-  Navigation,
   Phone,
   Search,
   ShieldCheck,
-  SlidersHorizontal,
   Stethoscope,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  type DirectoryResponse,
+  type PublicDoctor,
+  pilotCities,
+  sampleDoctors,
+} from "@/lib/directory";
 
-type Doctor = {
-  id: number;
-  name: string;
-  specialty: string;
-  hospital: string;
-  city: string;
-  province: string;
-  shift: string;
-  hours: string;
-  verified: string;
-  initials: string;
-  tone: string;
-  phone: string;
-};
-
-const doctors: Doctor[] = [
-  {
-    id: 1,
-    name: "Dr. Ayesha Malik",
-    specialty: "General Physician",
-    hospital: "Services Hospital",
-    city: "Lahore",
-    province: "Punjab",
-    shift: "On duty now",
-    hours: "8:00 AM — 2:00 PM",
-    verified: "Verified 12 min ago",
-    initials: "AM",
-    tone: "mint",
-    phone: "042 9920 3402",
-  },
-  {
-    id: 2,
-    name: "Dr. Hamza Siddiqui",
-    specialty: "Cardiologist",
-    hospital: "Jinnah Postgraduate Medical Centre",
-    city: "Karachi",
-    province: "Sindh",
-    shift: "On duty now",
-    hours: "9:00 AM — 5:00 PM",
-    verified: "Verified 24 min ago",
-    initials: "HS",
-    tone: "blue",
-    phone: "021 9920 1300",
-  },
-  {
-    id: 3,
-    name: "Dr. Sanaullah Khan",
-    specialty: "Pediatrician",
-    hospital: "Lady Reading Hospital",
-    city: "Peshawar",
-    province: "Khyber Pakhtunkhwa",
-    shift: "Starts at 4:00 PM",
-    hours: "4:00 PM — 10:00 PM",
-    verified: "Verified 35 min ago",
-    initials: "SK",
-    tone: "amber",
-    phone: "091 9211 438",
-  },
-  {
-    id: 4,
-    name: "Dr. Zoya Ahmed",
-    specialty: "Gynecologist",
-    hospital: "Pakistan Institute of Medical Sciences",
-    city: "Islamabad",
-    province: "Islamabad Capital Territory",
-    shift: "On duty now",
-    hours: "10:00 AM — 6:00 PM",
-    verified: "Verified 8 min ago",
-    initials: "ZA",
-    tone: "rose",
-    phone: "051 9261 170",
-  },
-  {
-    id: 5,
-    name: "Dr. Bilal Raza",
-    specialty: "Emergency Medicine",
-    hospital: "Nishtar Hospital",
-    city: "Multan",
-    province: "Punjab",
-    shift: "On duty now",
-    hours: "2:00 PM — 10:00 PM",
-    verified: "Verified 17 min ago",
-    initials: "BR",
-    tone: "violet",
-    phone: "061 9200 230",
-  },
-  {
-    id: 6,
-    name: "Dr. Mahnoor Baloch",
-    specialty: "Dermatologist",
-    hospital: "Sandeman Provincial Hospital",
-    city: "Quetta",
-    province: "Balochistan",
-    shift: "Starts at 6:00 PM",
-    hours: "6:00 PM — 11:00 PM",
-    verified: "Verified 41 min ago",
-    initials: "MB",
-    tone: "cyan",
-    phone: "081 9202 013",
-  },
-];
-
-const cities = [
-  { name: "Lahore", count: "138 doctors", landmark: "Punjab" },
-  { name: "Karachi", count: "214 doctors", landmark: "Sindh" },
-  { name: "Islamabad", count: "84 doctors", landmark: "ICT" },
-  { name: "Peshawar", count: "76 doctors", landmark: "Khyber Pakhtunkhwa" },
-];
+const formatDate = (value: string) =>
+  new Intl.DateTimeFormat("en-PK", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
 
 export default function Home() {
+  const [doctors, setDoctors] = useState<PublicDoctor[]>(sampleDoctors);
+  const [dataMode, setDataMode] = useState<DirectoryResponse["mode"]>("sample");
   const [query, setQuery] = useState("");
   const [city, setCity] = useState("All cities");
   const [specialty, setSpecialty] = useState("All specialties");
-  const [onDutyOnly, setOnDutyOnly] = useState(true);
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<PublicDoctor | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searched, setSearched] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/doctors")
+      .then((response) => {
+        if (!response.ok) throw new Error("Directory unavailable");
+        return response.json() as Promise<DirectoryResponse>;
+      })
+      .then((payload) => {
+        if (!active) return;
+        setDoctors(payload.doctors);
+        setDataMode(payload.mode);
+      })
+      .catch(() => {
+        if (active) setDataMode("sample");
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const specialties = useMemo(
+    () => [...new Set(doctors.map((doctor) => doctor.specialty))].sort(),
+    [doctors],
+  );
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return doctors.filter((doctor) => {
+      const facilityInitials = doctor.facilityName
+        .split(/\s+/)
+        .filter((word) => !["of", "and", "the"].includes(word.toLowerCase()))
+        .map((word) => word[0])
+        .join("")
+        .toLowerCase();
       const matchesQuery =
         !needle ||
-        [doctor.name, doctor.specialty, doctor.hospital, doctor.city].some(
-          (value) => value.toLowerCase().includes(needle),
-        );
+        facilityInitials.includes(needle) ||
+        [
+          doctor.name,
+          doctor.designation,
+          doctor.specialty,
+          doctor.facilityName,
+          doctor.address,
+        ].some((value) => value.toLowerCase().includes(needle));
       const matchesCity = city === "All cities" || doctor.city === city;
       const matchesSpecialty =
         specialty === "All specialties" || doctor.specialty === specialty;
-      const matchesDuty = !onDutyOnly || doctor.shift === "On duty now";
-      return matchesQuery && matchesCity && matchesSpecialty && matchesDuty;
+      return matchesQuery && matchesCity && matchesSpecialty;
     });
-  }, [query, city, specialty, onDutyOnly]);
+  }, [city, doctors, query, specialty]);
 
-  const scrollToResults = () => {
-    setSearched(true);
-    document.getElementById("doctors")?.scrollIntoView({ behavior: "smooth" });
-  };
+  const searchDirectory = () =>
+    document.getElementById("directory")?.scrollIntoView({ behavior: "smooth" });
 
-  const useLocation = () => {
-    setCity("Lahore");
-    setSearched(true);
+  const clearFilters = () => {
+    setQuery("");
+    setCity("All cities");
+    setSpecialty("All specialties");
   };
 
   return (
     <main>
-      <div className="announcement">
-        <span>Public service directory · Duty information is regularly verified</span>
-        <a href="#how-it-works">How verification works <ArrowRight size={14} /></a>
+      <div className="unofficial-bar">
+        <span><CircleAlert size={14} /> Independent, unofficial public directory</span>
+        <a href="#standards">How records are verified <ArrowRight size={14} /></a>
       </div>
 
       <header className="nav-shell">
         <nav className="nav container">
           <a className="brand" href="#">
             <span className="brand-mark"><HeartPulse size={23} strokeWidth={2.4} /></span>
-            <span>Sehat<span>Duty</span></span>
+            <span>Sehat<span>Directory</span></span>
           </a>
           <div className={`nav-links ${mobileOpen ? "open" : ""}`}>
-            <a href="#doctors" onClick={() => setMobileOpen(false)}>Find a doctor</a>
-            <a href="#cities" onClick={() => setMobileOpen(false)}>Cities</a>
-            <a href="#how-it-works" onClick={() => setMobileOpen(false)}>How it works</a>
+            <a href="#directory" onClick={() => setMobileOpen(false)}>Find a doctor</a>
+            <a href="#cities" onClick={() => setMobileOpen(false)}>Pilot cities</a>
+            <a href="#standards" onClick={() => setMobileOpen(false)}>Verification</a>
             <a href="#about" onClick={() => setMobileOpen(false)}>About</a>
           </div>
           <div className="nav-actions">
-            <button className="language"><Languages size={17} /> اردو</button>
-            <a className="hospital-link" href="#partner">For hospitals</a>
-            <button
-              className="menu-button"
-              aria-label="Toggle navigation"
-              onClick={() => setMobileOpen((value) => !value)}
-            >
+            <button className="language" type="button"><Languages size={17} /> اردو</button>
+            <a className="report-link" href="mailto:corrections@sehatdirectory.pk">Report a correction</a>
+            <button className="menu-button" type="button" aria-label="Toggle navigation" onClick={() => setMobileOpen((value) => !value)}>
               {mobileOpen ? <X /> : <Menu />}
             </button>
           </div>
@@ -205,194 +137,188 @@ export default function Home() {
         <div className="hero-pattern" />
         <div className="container hero-grid">
           <div className="hero-copy">
-            <div className="eyebrow"><span><ShieldCheck size={14} /></span> Verified public health information</div>
-            <h1>Find a government doctor <em>on duty, right now.</em></h1>
+            <div className="eyebrow"><ShieldCheck size={15} /> Hajj 2027 medical form support</div>
+            <h1>Find a verified government doctor <em>near you.</em></h1>
             <p className="hero-lead">
-              Search verified duty rosters from public hospitals across Pakistan.
-              Know where to go before you leave home.
+              Search government doctors with a valid PMDC registration who may
+              complete your Hajj medical fitness certificate.
             </p>
 
-            <div className="search-card">
-              <label className="search-field wide">
+            <div className="search-panel">
+              <label className="search-control search-wide">
                 <span>Doctor, specialty or hospital</span>
-                <div><Search size={20} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="e.g. Cardiologist or Jinnah Hospital" /></div>
+                <div><Search size={20} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="e.g. General Medicine or PIMS" /></div>
               </label>
-              <label className="search-field">
+              <label className="search-control">
                 <span>City</span>
-                <div><MapPin size={20} />
-                  <select value={city} onChange={(event) => setCity(event.target.value)}>
-                    <option>All cities</option>
-                    {cities.map((item) => <option key={item.name}>{item.name}</option>)}
-                    <option>Multan</option><option>Quetta</option>
-                  </select>
-                  <ChevronDown className="select-arrow" size={16} />
-                </div>
+                <div><MapPin size={20} /><select value={city} onChange={(event) => setCity(event.target.value)}><option>All cities</option>{pilotCities.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={16} /></div>
               </label>
-              <button className="search-button" onClick={scrollToResults}><Search size={19} /> Search doctors</button>
-              <button className="location-button" onClick={useLocation}><LocateFixed size={17} /> Use my location</button>
+              <button className="primary-button" type="button" onClick={searchDirectory}><Search size={18} /> Find doctors</button>
             </div>
 
             <div className="hero-notes">
-              <span><Check size={16} /> No sign-up needed</span>
-              <span><Check size={16} /> Free public service</span>
-              <span><Check size={16} /> Updated throughout the day</span>
+              <span><CheckCircle2 size={16} /> Valid PMDC registration checked</span>
+              <span><CheckCircle2 size={16} /> Government posting checked</span>
+              <span><CheckCircle2 size={16} /> PMDC numbers kept private</span>
             </div>
           </div>
 
-          <div className="hero-visual" aria-label="Live duty status preview">
-            <div className="map-shape map-one" />
-            <div className="map-shape map-two" />
-            <div className="visual-card">
-              <div className="visual-top">
-                <span className="live-dot" />
-                <span>LIVE DUTY STATUS</span>
-                <span className="updated">Updated now</span>
-              </div>
-              <div className="visual-doctor">
-                <div className="avatar large mint">AM</div>
-                <div><strong>Dr. Ayesha Malik</strong><span>General Physician</span></div>
-                <BadgeCheck className="verified-icon" size={21} />
-              </div>
-              <div className="visual-hospital">
-                <span className="icon-box"><Building2 size={19} /></span>
-                <div><small>ON DUTY AT</small><strong>Services Hospital, Lahore</strong></div>
-              </div>
-              <div className="shift-row">
-                <span><Clock3 size={17} /> 8:00 AM — 2:00 PM</span>
-                <span className="status"><i /> Available</span>
-              </div>
-              <button onClick={() => setSelectedDoctor(doctors[0])}>View duty details <ArrowRight size={16} /></button>
+          <aside className="purpose-card">
+            <span className="purpose-icon"><FileCheck2 size={29} /></span>
+            <span className="kicker">BEFORE YOU VISIT</span>
+            <h2>Confirm with the facility</h2>
+            <p>Doctor postings and clinic hours can change. Call the official hospital number before travelling and take the current Ministry-issued Hajj medical form.</p>
+            <div className="purpose-checks">
+              <span><BadgeCheck size={18} /><b>PMDC status</b> verified internally</span>
+              <span><Building2 size={18} /><b>Government role</b> sourced separately</span>
+              <span><Phone size={18} /><b>Contact details</b> belong to the facility</span>
             </div>
-            <div className="verified-pill"><ShieldCheck size={18} /><div><strong>Hospital verified</strong><small>12 minutes ago</small></div></div>
-          </div>
+          </aside>
         </div>
       </section>
 
-      <section className="trust-strip">
-        <div className="container trust-grid">
-          <div><strong>1,240+</strong><span>Listed doctors</span></div>
-          <div><strong>86</strong><span>Public hospitals</span></div>
-          <div><strong>34</strong><span>Cities covered</span></div>
-          <div className="trust-message"><ShieldCheck size={30} /><span><b>Information you can trust</b>Rosters sourced from participating public hospitals</span></div>
-        </div>
-      </section>
-
-      <section className="directory section" id="doctors">
+      <section className="directory section" id="directory">
         <div className="container">
           <div className="section-heading split">
-            <div><span className="kicker">AVAILABLE TODAY</span><h2>Doctors currently on duty</h2><p>Recently verified shifts at government hospitals across Pakistan.</p></div>
-            <a href="#search-panel">View all doctors <ArrowRight size={17} /></a>
+            <div>
+              <span className="kicker">FOUR-CITY PILOT</span>
+              <h2>Government doctor directory</h2>
+              <p>Only records that pass both PMDC and government-employment checks are publishable.</p>
+            </div>
+            <div className={`data-mode ${dataMode}`}><Database size={15} /> {dataMode === "database" ? "Connected directory" : "Sample records"}</div>
           </div>
 
-          <div className="filter-bar" id="search-panel">
-            <label><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search doctors or hospitals" /></label>
-            <label><MapPin size={17} /><select value={city} onChange={(event) => setCity(event.target.value)}><option>All cities</option>{[...new Set(doctors.map((doctor) => doctor.city))].map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={14} /></label>
-            <label><Stethoscope size={17} /><select value={specialty} onChange={(event) => setSpecialty(event.target.value)}><option>All specialties</option>{[...new Set(doctors.map((doctor) => doctor.specialty))].map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={14} /></label>
-            <button className={`duty-toggle ${onDutyOnly ? "active" : ""}`} onClick={() => setOnDutyOnly((value) => !value)}><span><i /></span> On duty now</button>
-            <button className="filter-icon" aria-label="More filters"><SlidersHorizontal size={19} /></button>
+          {dataMode === "sample" && (
+            <div className="sample-notice">
+              <CircleAlert size={19} />
+              <span><b>Demonstration data:</b> these names and details are placeholders, not verified public listings.</span>
+            </div>
+          )}
+
+          <div className="filter-bar">
+            <label><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name, facility or address" /></label>
+            <label><MapPin size={17} /><select value={city} onChange={(event) => setCity(event.target.value)}><option>All cities</option>{pilotCities.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={14} /></label>
+            <label><Stethoscope size={17} /><select value={specialty} onChange={(event) => setSpecialty(event.target.value)}><option>All specialties</option>{specialties.map((item) => <option key={item}>{item}</option>)}</select><ChevronDown size={14} /></label>
+            <div className="verified-filter"><BadgeCheck size={17} /> PMDC verified only</div>
           </div>
 
           <div className="results-summary">
-            <span>{results.length} {results.length === 1 ? "doctor" : "doctors"} found</span>
-            {(searched || query || city !== "All cities" || specialty !== "All specialties") && <button onClick={() => { setQuery(""); setCity("All cities"); setSpecialty("All specialties"); setOnDutyOnly(false); setSearched(false); }}>Clear filters</button>}
+            <span>{results.length} verified {results.length === 1 ? "record" : "records"}</span>
+            {(query || city !== "All cities" || specialty !== "All specialties") && <button type="button" onClick={clearFilters}>Clear filters</button>}
           </div>
 
           <div className="doctor-grid">
             {results.map((doctor) => (
               <article className="doctor-card" key={doctor.id}>
                 <div className="doctor-head">
-                  <div className={`avatar ${doctor.tone}`}>{doctor.initials}</div>
-                  <div className="doctor-title"><h3>{doctor.name} <BadgeCheck size={17} /></h3><span>{doctor.specialty}</span></div>
-                  <span className={`duty-badge ${doctor.shift !== "On duty now" ? "later" : ""}`}><i /> {doctor.shift}</span>
+                  <div className="doctor-avatar">{doctor.name.split(" ").slice(1).map((part) => part[0]).join("").slice(0, 2)}</div>
+                  <div>
+                    <h3>{doctor.name} <BadgeCheck size={18} aria-label="PMDC verified" /></h3>
+                    <p>{doctor.designation} · {doctor.specialty}</p>
+                  </div>
+                </div>
+                <div className="verification-row">
+                  <span><ShieldCheck size={15} /> PMDC verified</span>
+                  <span><Building2 size={15} /> Government posting verified</span>
                 </div>
                 <div className="doctor-details">
-                  <div><Building2 size={18} /><span><small>HOSPITAL</small><strong>{doctor.hospital}</strong></span></div>
-                  <div><MapPin size={18} /><span><small>LOCATION</small><strong>{doctor.city}, {doctor.province}</strong></span></div>
-                  <div><Clock3 size={18} /><span><small>TODAY&apos;S SHIFT</small><strong>{doctor.hours}</strong></span></div>
+                  <div><Building2 size={18} /><span><small>GOVERNMENT FACILITY</small><strong>{doctor.facilityName}</strong><em>{doctor.facilityType}</em></span></div>
+                  <div><MapPin size={18} /><span><small>ADDRESS</small><strong>{doctor.address}</strong></span></div>
+                  <div><Phone size={18} /><span><small>OFFICIAL SWITCHBOARD</small><strong>{doctor.officialPhone}</strong></span></div>
                 </div>
                 <div className="doctor-foot">
-                  <span><CircleCheck size={15} /> {doctor.verified}</span>
-                  <button onClick={() => setSelectedDoctor(doctor)}>View details <ArrowRight size={15} /></button>
+                  <span>Checked {formatDate(doctor.lastVerifiedAt)}</span>
+                  <button type="button" onClick={() => setSelectedDoctor(doctor)}>View details <ArrowRight size={15} /></button>
                 </div>
               </article>
             ))}
           </div>
-          {results.length === 0 && <div className="empty-state"><Search size={30} /><h3>No matching doctors</h3><p>Try a different city, specialty, or search term.</p><button onClick={() => { setQuery(""); setCity("All cities"); setSpecialty("All specialties"); setOnDutyOnly(false); }}>Reset filters</button></div>}
+
+          {results.length === 0 && (
+            <div className="empty-state"><Search size={30} /><h3>No matching verified records</h3><p>Try another city, facility, or specialty.</p><button type="button" onClick={clearFilters}>Reset filters</button></div>
+          )}
         </div>
       </section>
 
       <section className="cities section" id="cities">
         <div className="container">
-          <div className="section-heading centered"><span className="kicker">EXPLORE BY LOCATION</span><h2>Find care in your city</h2><p>Browse verified duty rosters from public hospitals near you.</p></div>
+          <div className="section-heading centered"><span className="kicker">INITIAL COVERAGE</span><h2>Four-city pilot</h2><p>We are starting with a small, auditable directory before expanding across Pakistan.</p></div>
           <div className="city-grid">
-            {cities.map((item, index) => (
-              <button className="city-card" key={item.name} onClick={() => { setCity(item.name); setOnDutyOnly(false); setTimeout(scrollToResults, 50); }}>
-                <span className={`city-icon city-${index + 1}`}><Building2 size={25} /></span>
-                <span><strong>{item.name}</strong><small>{item.landmark}</small></span>
-                <em>{item.count} <ArrowRight size={15} /></em>
-              </button>
-            ))}
+            {pilotCities.map((item, index) => {
+              const count = doctors.filter((doctor) => doctor.city === item).length;
+              return (
+                <button className="city-card" type="button" key={item} onClick={() => { setCity(item); setTimeout(searchDirectory, 50); }}>
+                  <span className={`city-icon city-${index + 1}`}><Building2 size={24} /></span>
+                  <strong>{item}</strong>
+                  <small>{count} {dataMode === "sample" ? "sample" : "verified"} {count === 1 ? "record" : "records"}</small>
+                  <em>Browse directory <ArrowRight size={15} /></em>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section className="how section" id="how-it-works">
-        <div className="container how-grid">
-          <div className="how-copy">
-            <span className="kicker">SIMPLE & RELIABLE</span>
-            <h2>Get the right information before you go</h2>
-            <p>Sehat Duty helps patients save time and avoid unnecessary trips with clear, recent duty information.</p>
-            <div className="steps">
-              <div><span>01</span><div><strong>Search your area</strong><p>Choose a city, hospital, or the specialty you need.</p></div></div>
-              <div><span>02</span><div><strong>Check live duty status</strong><p>See who is available and when their shift ends.</p></div></div>
-              <div><span>03</span><div><strong>Visit with confidence</strong><p>Call the official hospital number if you need confirmation.</p></div></div>
-            </div>
+      <section className="standards section" id="standards">
+        <div className="container standards-grid">
+          <div className="standards-copy">
+            <span className="kicker">PUBLICATION STANDARD</span>
+            <h2>Two checks before a doctor appears</h2>
+            <p>Registration and employment are different facts. We verify them independently and keep the evidence attached to each internal record.</p>
+            <div className="standard-step"><span>01</span><div><b>Government source check</b><p>A public hospital or health-department source must support the doctor’s current posting.</p></div></div>
+            <div className="standard-step"><span>02</span><div><b>PMDC validity check</b><p>The registration must be valid when checked. The registration number is retained internally and never displayed.</p></div></div>
+            <div className="standard-step"><span>03</span><div><b>Ongoing review</b><p>Stale, disputed, or failed records are hidden until they can be verified again.</p></div></div>
           </div>
-          <div className="verification-card">
-            <span className="shield-large"><ShieldCheck size={34} /></span>
-            <span className="kicker">OUR VERIFICATION STANDARD</span>
-            <h3>Built around trustworthy data</h3>
+          <aside className="independence-card">
+            <ShieldCheck size={38} />
+            <span className="kicker">INDEPENDENT PROJECT</span>
+            <h3>Not a government website</h3>
+            <p>Sehat Directory is not affiliated with or endorsed by PMDC, the Ministry of Religious Affairs, or any provincial government.</p>
             <ul>
-              <li><CircleCheck size={19} /><span><b>Official sources</b>Duty rosters come from participating hospitals and health departments.</span></li>
-              <li><CalendarClock size={19} /><span><b>Time-stamped updates</b>Every listing shows when it was last checked or updated.</span></li>
-              <li><Phone size={19} /><span><b>Safe contact details</b>We only publish official facility numbers—never private details.</span></li>
+              <li><CheckCircle2 size={17} /> Public-source attribution</li>
+              <li><CheckCircle2 size={17} /> Correction and removal requests</li>
+              <li><CheckCircle2 size={17} /> No private phone numbers</li>
             </ul>
-            <a href="#">Learn about our data standards <ArrowRight size={16} /></a>
-          </div>
+            <a href="mailto:corrections@sehatdirectory.pk">Report incorrect information <ArrowRight size={16} /></a>
+          </aside>
         </div>
       </section>
 
-      <section className="partner" id="partner">
-        <div className="container partner-inner">
-          <div><span className="kicker light">FOR PUBLIC HEALTH FACILITIES</span><h2>Keep your community informed.</h2><p>Share accurate duty rosters and help patients find care faster. Partner participation is free.</p></div>
-          <a href="mailto:partners@sehatduty.pk">List your hospital <ArrowRight size={18} /></a>
+      <section className="cta">
+        <div className="container cta-inner">
+          <div><span className="kicker light">HELP IMPROVE THE DIRECTORY</span><h2>Know of an outdated record?</h2><p>Send us the official source or ask for a correction or removal.</p></div>
+          <a href="mailto:corrections@sehatdirectory.pk">Submit a correction <ArrowRight size={17} /></a>
         </div>
       </section>
 
       <footer id="about">
         <div className="container footer-grid">
-          <div><a className="brand footer-brand" href="#"><span className="brand-mark"><HeartPulse size={23} /></span><span>Sehat<span>Duty</span></span></a><p>A public service helping people across Pakistan find verified government doctors on duty.</p><span className="made">Made for Pakistan <b>♥</b></span></div>
-          <div><strong>Explore</strong><a href="#doctors">Find a doctor</a><a href="#cities">Browse cities</a><a href="#how-it-works">How it works</a></div>
-          <div><strong>Information</strong><a href="#">Data standards</a><a href="#">For hospitals</a><a href="#">Report an update</a></div>
-          <div><strong>Important</strong><p>This is a demonstration with sample data. For an emergency, call <b>1122</b> or go to your nearest emergency department.</p></div>
+          <div><a className="brand footer-brand" href="#"><span className="brand-mark"><HeartPulse size={22} /></span><span>Sehat<span>Directory</span></span></a><p>An independent directory helping Pakistani pilgrims locate verified government doctors for Hajj medical forms.</p></div>
+          <div><strong>Directory</strong><a href="#directory">Find a doctor</a><a href="#cities">Pilot cities</a><a href="#standards">Verification standard</a></div>
+          <div><strong>Important</strong><p>Always confirm the doctor’s availability with the government facility and use the latest official Hajj medical form.</p></div>
+          <div><strong>Emergency</strong><p>This directory is not an emergency service. Call <b>1122</b> or visit the nearest emergency department.</p></div>
         </div>
-        <div className="container copyright"><span>© 2026 Sehat Duty Pakistan</span><span>Privacy · Terms · Accessibility</span></div>
+        <div className="container copyright"><span>© 2026 Sehat Directory Pakistan</span><span>Unofficial directory · Privacy · Corrections</span></div>
       </footer>
 
       {selectedDoctor && (
         <div className="modal-backdrop" role="presentation" onClick={() => setSelectedDoctor(null)}>
-          <div className="modal" role="dialog" aria-modal="true" aria-label={`${selectedDoctor.name} duty details`} onClick={(event) => event.stopPropagation()}>
-            <button className="modal-close" onClick={() => setSelectedDoctor(null)} aria-label="Close"><X size={20} /></button>
-            <div className="modal-status"><span className="live-dot" /> {selectedDoctor.shift}</div>
-            <div className="modal-doctor"><div className={`avatar large ${selectedDoctor.tone}`}>{selectedDoctor.initials}</div><div><h2>{selectedDoctor.name} <BadgeCheck size={20} /></h2><p>{selectedDoctor.specialty}</p></div></div>
+          <div className="modal" role="dialog" aria-modal="true" aria-label={`${selectedDoctor.name} directory details`} onClick={(event) => event.stopPropagation()}>
+            <button className="modal-close" type="button" onClick={() => setSelectedDoctor(null)} aria-label="Close"><X size={20} /></button>
+            <div className="modal-badges"><span><BadgeCheck size={16} /> PMDC verified</span><span><Building2 size={16} /> Government doctor</span></div>
+            <h2>{selectedDoctor.name}</h2>
+            <p className="modal-role">{selectedDoctor.designation} · {selectedDoctor.specialty}</p>
             <div className="modal-info">
-              <div><Building2 /><span><small>HOSPITAL</small><strong>{selectedDoctor.hospital}</strong></span></div>
-              <div><Navigation /><span><small>LOCATION</small><strong>{selectedDoctor.city}, {selectedDoctor.province}</strong></span></div>
-              <div><Clock3 /><span><small>TODAY&apos;S SHIFT</small><strong>{selectedDoctor.hours}</strong></span></div>
-              <div><Phone /><span><small>HOSPITAL SWITCHBOARD</small><strong>{selectedDoctor.phone}</strong></span></div>
+              <div><Building2 /><span><small>GOVERNMENT FACILITY</small><strong>{selectedDoctor.facilityName}</strong><em>{selectedDoctor.facilityType}</em></span></div>
+              <div><MapPin /><span><small>ADDRESS</small><strong>{selectedDoctor.address}</strong></span></div>
+              <div><Phone /><span><small>OFFICIAL SWITCHBOARD</small><strong>{selectedDoctor.officialPhone}</strong></span></div>
+              <div><FileCheck2 /><span><small>LAST CHECKED</small><strong>{formatDate(selectedDoctor.lastVerifiedAt)}</strong></span></div>
             </div>
-            <div className="modal-verified"><ShieldCheck size={20} /><span><b>Duty information verified</b>{selectedDoctor.verified}. Call the hospital before travelling if your need is not urgent.</span></div>
-            <a className="call-button" href={`tel:${selectedDoctor.phone.replace(/\s/g, "")}`}><Phone size={18} /> Call hospital</a>
+            <div className="confirm-note"><CircleAlert size={19} /><span><b>Call before travelling.</b>{selectedDoctor.availabilityNote}</span></div>
+            <div className="modal-actions">
+              <a href={`tel:${selectedDoctor.officialPhone.replace(/\s/g, "")}`}><Phone size={17} /> Call facility</a>
+              {selectedDoctor.sourceUrl ? <a className="secondary" href={selectedDoctor.sourceUrl} target="_blank" rel="noreferrer">View source <ExternalLink size={16} /></a> : <span className="source-label">{selectedDoctor.sourceName}</span>}
+            </div>
           </div>
         </div>
       )}
