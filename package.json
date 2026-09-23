@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "db:push": "tsx scripts/apply-migrations.ts",
     "ingest:dry": "tsx scripts/ingest/index.ts",
     "ingest:commit": "tsx scripts/ingest/index.ts --commit"
   },
