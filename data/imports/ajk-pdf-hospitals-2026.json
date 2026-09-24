@@ -1,0 +1,24 @@
+{
+  "sourceName": "AJK government hospitals directory (provided PDF)",
+  "sourceUrl": "local:ajk_government_hospitals_directory.pdf",
+  "authority": "Compiled AJK hospital directory provided for import",
+  "retrievedAt": "2026-09-25",
+  "province": "Azad Jammu & Kashmir",
+  "hospitals": [
+    { "district": "Muzaffarabad", "name": "Abbas Institute of Medical Sciences", "phone": "+92-5822-920527", "address": "Domail, Jalalabad Stadium Road, Muzaffarabad", "facilityType": "Government teaching hospital" },
+    { "district": "Muzaffarabad", "name": "Shaikh Khalifa Bin Zayed / CMH Muzaffarabad", "phone": null, "address": "Muzaffarabad", "facilityType": "Government teaching hospital" },
+    { "district": "Muzaffarabad", "name": "District Headquarters Hospital Muzaffarabad", "phone": null, "address": "Muzaffarabad", "facilityType": "Government district headquarters hospital" },
+    { "district": "Neelum", "name": "DHQ Hospital Neelum", "phone": null, "address": "Athmuqam / Neelum Valley", "facilityType": "Government district headquarters hospital" },
+    { "district": "Jhelum Valley", "name": "DHQ Hospital Jhelum Valley", "phone": null, "address": "Hattian Bala, Jhelum Valley", "facilityType": "Government district headquarters hospital" },
+    { "district": "Bagh", "name": "DHQ Hospital Bagh", "phone": null, "address": "Bagh", "facilityType": "Government district headquarters hospital" },
+    { "district": "Haveli", "name": "DHQ Hospital Haveli", "phone": null, "address": "Forward Kahuta, Haveli", "facilityType": "Government district headquarters hospital" },
+    { "district": "Poonch", "name": "DHQ Hospital Rawalakot / Poonch", "phone": null, "address": "Rawalakot, Poonch", "facilityType": "Government district headquarters hospital" },
+    { "district": "Poonch", "name": "SKBZ / CMH Rawalakot", "phone": null, "address": "Rawalakot", "facilityType": "Government teaching hospital" },
+    { "district": "Sudhnoti", "name": "DHQ Hospital Pallandri", "phone": null, "address": "Pallandri, Sudhnoti", "facilityType": "Government district headquarters hospital" },
+    { "district": "Kotli", "name": "DHQ Hospital Kotli", "phone": "+92-5826-920262", "address": "Kotli", "facilityType": "Government district headquarters hospital" },
+    { "district": "Mirpur", "name": "Divisional Headquarters Teaching Hospital Mirpur", "phone": null, "address": "Mirpur", "facilityType": "Government teaching hospital" },
+    { "district": "Mirpur", "name": "New City Teaching Hospital Mirpur", "phone": null, "address": "New City, Mirpur", "facilityType": "Government teaching hospital" },
+    { "district": "Mirpur", "name": "DHQ Hospital Mirpur", "phone": null, "address": "Mirpur", "facilityType": "Government district headquarters hospital" },
+    { "district": "Bhimber", "name": "DHQ Hospital Bhimber", "phone": null, "address": "Bhimber", "facilityType": "Government district headquarters hospital" }
+  ]
+}

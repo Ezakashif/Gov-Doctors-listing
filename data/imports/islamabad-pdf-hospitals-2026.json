@@ -1,0 +1,71 @@
+{
+  "sourceName": "Islamabad government hospitals directory (provided PDF)",
+  "sourceUrl": "local:government_hospitals_islamabad.pdf",
+  "authority": "Compiled Islamabad hospital directory provided for import",
+  "retrievedAt": "2026-09-25",
+  "hospitals": [
+    {
+      "district": "Islamabad",
+      "name": "Pakistan Institute of Medical Sciences (PIMS)",
+      "phone": "051-9261170",
+      "address": "Khayaban-e-Suhrawardy, G-8/3, Islamabad",
+      "facilityType": "Federal government hospital"
+    },
+    {
+      "district": "Islamabad",
+      "name": "Federal Government Polyclinic Hospital",
+      "phone": "051-9214965",
+      "address": "Luqman Hakeem Road, G-6/2, Islamabad",
+      "facilityType": "Federal government hospital"
+    },
+    {
+      "district": "Islamabad",
+      "name": "Capital Hospital (CDA Hospital)",
+      "phone": "051-9221334",
+      "address": "Street 31, G-6/2, Islamabad",
+      "facilityType": "Federal government hospital"
+    },
+    {
+      "district": "Islamabad",
+      "name": "National Institute of Health Clinical Ward",
+      "phone": "051-9255090",
+      "address": "Park Road, Chak Shahzad, Islamabad",
+      "facilityType": "Federal government hospital"
+    },
+    {
+      "district": "Islamabad",
+      "name": "Nuclear Medicine, Oncology & Radiotherapy Institute (NORI)",
+      "phone": "051-9260611",
+      "address": "Hanna Road, G-8/3, Islamabad",
+      "facilityType": "Federal government hospital"
+    },
+    {
+      "district": "Islamabad",
+      "name": "KRL General Hospital",
+      "phone": "051-9106270",
+      "address": "G-9/1, Service Road South, Islamabad",
+      "facilityType": "Federal government hospital"
+    },
+    {
+      "district": "Islamabad",
+      "name": "Federal General Hospital",
+      "phone": "051-9255012",
+      "address": "Chak Shahzad, Islamabad",
+      "facilityType": "Federal government hospital"
+    },
+    {
+      "district": "Islamabad",
+      "name": "National Institute of Rehabilitation Medicine (NIRM)",
+      "phone": "051-9262212",
+      "address": "Street 9, G-8/2, Islamabad",
+      "facilityType": "Federal government hospital"
+    },
+    {
+      "district": "Islamabad",
+      "name": "Social Security Hospital",
+      "phone": "051-9258210",
+      "address": "Sector I-12, Islamabad",
+      "facilityType": "Federal government hospital"
+    }
+  ]
+}

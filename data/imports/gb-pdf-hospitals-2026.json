@@ -1,0 +1,25 @@
+{
+  "sourceName": "Gilgit-Baltistan government hospitals directory (provided PDF)",
+  "sourceUrl": "local:gilgit_baltistan_government_hospitals_directory.pdf",
+  "authority": "Compiled Gilgit-Baltistan hospital directory provided for import",
+  "retrievedAt": "2026-09-25",
+  "province": "Gilgit-Baltistan",
+  "hospitals": [
+    { "district": "Gilgit", "name": "Provincial Headquarter Hospital, Gilgit", "phone": null, "address": "Hospital Colony, near Governor House, Gilgit", "facilityType": "Government teaching hospital" },
+    { "district": "Gilgit", "name": "Gilgit City Hospital", "phone": null, "address": "Gilgit city", "facilityType": "Government hospital" },
+    { "district": "Gilgit", "name": "Gilgit Cardiac Hospital, Jutial", "phone": null, "address": "Jutial, Gilgit", "facilityType": "Government specialized hospital" },
+    { "district": "Diamer", "name": "District Headquarter Hospital Chilas", "phone": "05811-922371", "address": "River View Road, Chilas", "facilityType": "Government district headquarters hospital" },
+    { "district": "Ghizer", "name": "District Headquarter Hospital Ghizer", "phone": null, "address": "Near Sipli Bridge, Main Bazar, Gahkuch", "facilityType": "Government district headquarters hospital" },
+    { "district": "Ghanche", "name": "District Headquarter Hospital Khaplu", "phone": null, "address": "Chaqchan Road, Khaplu", "facilityType": "Government district headquarters hospital" },
+    { "district": "Skardu", "name": "District Headquarter Hospital Skardu", "phone": null, "address": "Skardu", "facilityType": "Government district headquarters hospital" },
+    { "district": "Astore", "name": "DHQ Hospital Astore", "phone": null, "address": "Eidgah, Astore", "facilityType": "Government district headquarters hospital" },
+    { "district": "Astore", "name": "50 Bedded Hospital Astore", "phone": null, "address": "Eidgah, Astore", "facilityType": "Government hospital" },
+    { "district": "Astore", "name": "Civil Hospital Bunji", "phone": null, "address": "Bunji, Astore", "facilityType": "Government civil hospital" },
+    { "district": "Astore", "name": "Civil Hospital Parishing", "phone": null, "address": "Parishing, Astore", "facilityType": "Government civil hospital" },
+    { "district": "Astore", "name": "Civil Hospital Minimerg", "phone": null, "address": "Minimerg, Astore", "facilityType": "Government civil hospital" },
+    { "district": "Hunza", "name": "Civil Hospital Hunza", "phone": null, "address": "Hunza District", "facilityType": "Government civil hospital" },
+    { "district": "Nagar", "name": "Civil Hospital Nagar", "phone": null, "address": "Nagar District", "facilityType": "Government civil hospital" },
+    { "district": "Shigar", "name": "Civil Hospital Shigar", "phone": null, "address": "Shigar District", "facilityType": "Government civil hospital" },
+    { "district": "Kharmang", "name": "Civil Hospital Kharmang", "phone": null, "address": "Kharmang District", "facilityType": "Government civil hospital" }
+  ]
+}

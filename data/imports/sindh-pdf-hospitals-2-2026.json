@@ -1,0 +1,127 @@
+{
+  "sourceName": "Sindh government hospitals directory 2 (provided PDF)",
+  "sourceUrl": "local:government_hospitals_sindh.pdf",
+  "authority": "Compiled Sindh hospital directory provided for import",
+  "retrievedAt": "2026-09-25",
+  "hospitals": [
+    {
+      "district": "Karachi",
+      "name": "Dr. Ruth K. M. Pfau Civil Hospital",
+      "phone": "021-99215740",
+      "address": "Mission Rd, near Civil Hospital Masjid, Nanakwara, Karachi",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Jinnah Postgraduate Medical Centre (JPMC)",
+      "phone": "021-99201300",
+      "address": "Rafiqui, Sarwar Shaheed Road, Karachi Cantonment, Karachi",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "National Institute of Cardiovascular Diseases (NICVD)",
+      "phone": "021-99201271",
+      "address": "Rafiqui S. J. Shaheed Road, Bizerta Lines, Cantt, Karachi",
+      "facilityType": "Government specialized hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "National Institute of Child Health (NICH)",
+      "phone": "021-99201262",
+      "address": "Rafiqui S. J. Shaheed Road, Karachi Cantonment, Karachi",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Abbasi Shaheed Hospital",
+      "phone": "021-99260400",
+      "address": "Block 3, Nazimabad, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital Liaquatabad",
+      "phone": "021-34984300",
+      "address": "Toufiq Road, Liaquatabad Town, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital Korangi",
+      "phone": "021-35063412",
+      "address": "Landhi Road, Sector 35 E, Landhi, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Qatar Hospital",
+      "phone": "021-36697412",
+      "address": "Orangi Town, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital Lyari",
+      "phone": "021-32516431",
+      "address": "Lyari, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Services Hospital",
+      "phone": "021-99215789",
+      "address": "M.A. Jinnah Road, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Hyderabad",
+      "name": "Liaquat University Hospital (Civil Hospital)",
+      "phone": "022-9210207",
+      "address": "Liberty Chowk, Near Market Tower, Main City, Hyderabad",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Hyderabad",
+      "name": "NICVD Hyderabad",
+      "phone": "021-99201271",
+      "address": "Wadhu Wah Road, Qasimabad, Hyderabad",
+      "facilityType": "Government specialized hospital"
+    },
+    {
+      "district": "Hyderabad",
+      "name": "Shah Bhitai Government Hospital",
+      "phone": "022-9260293",
+      "address": "Main Chowk, Unit No 4, Latifabad, Hyderabad",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Hyderabad",
+      "name": "Sindh Government Hospital Qasimabad",
+      "phone": "022-9240158",
+      "address": "Near Wadhu Wah, Main Highway Bypass, Qasimabad, Hyderabad",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Larkana",
+      "name": "Chandka Medical College Hospital",
+      "phone": "074-9410712",
+      "address": "Larkana, Sindh",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Sukkur",
+      "name": "Ghulam Muhammad Mahar Medical College Hospital",
+      "phone": "071-9310153",
+      "address": "Civil Hospital, Sukkur, Sindh",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Shaheed Benazirabad",
+      "name": "Peoples Medical College Hospital",
+      "phone": "0244-9370249",
+      "address": "Nawabshah, Shaheed Benazirabad, Sindh",
+      "facilityType": "Government teaching hospital"
+    }
+  ]
+}
