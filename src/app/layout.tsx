@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
     title: "Sehat Directory Pakistan — Find a government facility",
     description:
-      "An independent directory for locating government medical facilities and, when verified, PMDC-checked doctors for Hajj medical forms.",
+      "An independent, unofficial directory of government hospitals and clinics in Pakistan, with officially sourced addresses and switchboards.",
 };
 
 export default function RootLayout({
