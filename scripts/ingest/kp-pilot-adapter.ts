@@ -88,7 +88,14 @@ const facilityEvidence: Record<string, FacilityEvidence> = {
   "District Health Office Wana": needsReview("District health office", "Wana"),
   "Type-D Hospital Sarai Niamat Khan": needsReview("Government Type-D hospital", "Haripur"),
   "DHQ Hospital Haripur": needsReview("Government district headquarters hospital", "Haripur"),
-  "Mufti Mehmood Memorial Teaching Hospital": needsReview("Government teaching hospital", "Dera Ismail Khan"),
+  "Mufti Mehmood Memorial Teaching Hospital": {
+    address: "Opposite New Dera Township, Draban Road, Dera Ismail Khan, Khyber Pakhtunkhwa",
+    officialPhone: "0966-747152",
+    addressSourceUrl: "https://phsa.edu.pk/son-d-i-khan/",
+    verificationStatus: "verified",
+    facilityType: "Government teaching hospital",
+    tehsil: "Dera Ismail Khan",
+  },
   "BHU Jail Kohistan": needsReview("Basic health unit"),
   "DHQ Hospital Ghallanai": needsReview("Government district headquarters hospital", "Ghallanai"),
   "RHC Ekka Ghund": needsReview("Rural health centre", "Ekka Ghund"),
@@ -96,7 +103,14 @@ const facilityEvidence: Record<string, FacilityEvidence> = {
   "Swat Medical College": needsReview("Government medical college"),
   "Koklian Piran": needsReview("Unresolved facility name"),
   "DHQ Hospital Batkhela": needsReview("Government district headquarters hospital", "Batkhela"),
-  "BHU Jando Khel": needsReview("Basic health unit", "Bannu"),
+  "BHU Jando Khel": {
+    address: "Jhando Khel, Bannu, Khyber Pakhtunkhwa",
+    officialPhone: null,
+    addressSourceUrl: "https://bannu.kp.gov.pk/page/basic_health_unit_bhus",
+    verificationStatus: "verified",
+    facilityType: "Basic health unit",
+    tehsil: "Bannu",
+  },
 };
 
 export class KpSeniorityPilotAdapter {

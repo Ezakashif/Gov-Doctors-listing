@@ -89,6 +89,14 @@ export type PmdcReviewDecision = {
   sourceDocumentDate: string | null;
 };
 
+export type ReviewEvent = {
+  id: string;
+  verificationType: string;
+  outcome: string;
+  checkedAt: string;
+  evidence: Record<string, unknown>;
+};
+
 export type PmdcReviewCaseDetail = {
   doctorId: string;
   fullName: string;
@@ -113,9 +121,18 @@ export type PmdcReviewCaseDetail = {
     designation: string | null;
     status: string;
     asOfDate: string | null;
+    isCurrentConfirmed: boolean;
+    facilityId: string | null;
     facilityName: string | null;
+    facilityType: string | null;
     facilityAddress: string | null;
+    facilityPhone: string | null;
+    facilityProvince: string | null;
+    facilityDistrict: string | null;
+    facilityTehsil: string | null;
     facilityVerificationStatus: FacilityVerificationStatus | null;
+    facilitySourceUrl: string | null;
+    facilityLastVerifiedAt: string | null;
     sourceName: string | null;
     sourceUrl: string | null;
     sourceDocumentDate: string | null;
@@ -124,6 +141,56 @@ export type PmdcReviewCaseDetail = {
   } | null;
   candidates: PmdcCandidate[];
   decisions: PmdcReviewDecision[];
+  verificationEvents: ReviewEvent[];
+};
+
+export const GOVERNMENT_REVIEW_ACTIONS = [
+  "government_current_verified",
+  "government_record_historical",
+  "needs_current_verification",
+] as const;
+
+export type GovernmentReviewAction = (typeof GOVERNMENT_REVIEW_ACTIONS)[number];
+
+export const FACILITY_REVIEW_ACTIONS = [
+  "verified",
+  "needs_review",
+  "unverified",
+] as const;
+
+export type FacilityReviewAction = (typeof FACILITY_REVIEW_ACTIONS)[number];
+
+export const HAJJ_REVIEW_ACTIONS = [
+  "verified",
+  "needs_confirmation",
+  "not_verified",
+] as const;
+
+export type HajjReviewAction = (typeof HAJJ_REVIEW_ACTIONS)[number];
+
+export type ApplyGovernmentDecisionInput = {
+  doctorId: string;
+  status: GovernmentReviewAction;
+  reviewerLabel: string;
+  notes: string;
+};
+
+export type ApplyFacilityDecisionInput = {
+  doctorId: string;
+  status: FacilityReviewAction;
+  reviewerLabel: string;
+  notes: string;
+  address?: string | null;
+  officialPhone?: string | null;
+  sourceUrl?: string | null;
+};
+
+export type ApplyHajjDecisionInput = {
+  doctorId: string;
+  status: HajjReviewAction;
+  reviewerLabel: string;
+  notes: string;
+  sourceUrl?: string | null;
 };
 
 export type AddPmdcCandidateInput = {
@@ -152,6 +219,21 @@ export const isPmdcReviewDecision = (
   value: string,
 ): value is PmdcReviewDecisionName =>
   PMDC_REVIEW_DECISIONS.includes(value as PmdcReviewDecisionName);
+
+export const isGovernmentReviewAction = (
+  value: string,
+): value is GovernmentReviewAction =>
+  GOVERNMENT_REVIEW_ACTIONS.includes(value as GovernmentReviewAction);
+
+export const isFacilityReviewAction = (
+  value: string,
+): value is FacilityReviewAction =>
+  FACILITY_REVIEW_ACTIONS.includes(value as FacilityReviewAction);
+
+export const isHajjReviewAction = (
+  value: string,
+): value is HajjReviewAction =>
+  HAJJ_REVIEW_ACTIONS.includes(value as HajjReviewAction);
 
 export const mapDecisionToEventOutcome = (
   decision: PmdcReviewDecisionName,

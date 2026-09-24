@@ -16,7 +16,8 @@
     "verify:kp-pilot": "tsx scripts/verify-kp-pilot.ts",
     "review:pmdc:seed": "tsx scripts/pmdc-review.ts --seed",
     "review:pmdc:demo": "tsx scripts/pmdc-review.ts --demo",
-    "verify:pmdc-review": "tsx scripts/verify-pmdc-review.ts"
+    "verify:pmdc-review": "tsx scripts/verify-pmdc-review.ts",
+    "review:facilities": "tsx scripts/review-facilities.ts"
   },
   "dependencies": {
     "@supabase/realtime-js": "^2.109.0",

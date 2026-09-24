@@ -36,9 +36,10 @@ SUPABASE_DB_URL=your-session-pooler-uri
 
 The service-role key is server-only. Never prefix it with `NEXT_PUBLIC_` or expose it to client code.
 
-The public interface reads only `public_doctor_directory`. The view includes a
-PMDC number only after an unambiguous official match and only for records that
-also pass current government-employment, facility, and Hajj-attestation checks.
+The public interface reads `public_facility_directory` for government
+facilities and `public_doctor_directory` for doctors. Doctors appear only after
+an unambiguous official PMDC match plus current government-employment, facility,
+and Hajj-attestation checks. Unresolved PMDC candidates are never public.
 
 ## Automated ingestion
 
@@ -106,8 +107,16 @@ explicit `verified` decision. Unmatched, ambiguous, needs-more-information, and
 rejected decisions keep candidate numbers untrusted and do not publish the
 doctor.
 
-Six facilities in the pilot have addresses supported by official facility or
-government sources. Unconfirmed addresses and phone numbers remain `NULL`.
+Verified facility addresses are published independently of doctor verification.
+The remaining pilot facilities stay `needs_review` until an official source
+supports an address. Unconfirmed addresses and phone numbers remain `NULL`.
+
+```bash
+npm run review:facilities
+```
+
+The internal review console at `/review` can update government, facility, PMDC,
+and Hajj statuses separately. None of those actions alone publishes a doctor.
 
 ## Publication and privacy rules
 

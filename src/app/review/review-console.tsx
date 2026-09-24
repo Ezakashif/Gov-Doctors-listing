@@ -11,8 +11,14 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  FACILITY_REVIEW_ACTIONS,
+  GOVERNMENT_REVIEW_ACTIONS,
+  HAJJ_REVIEW_ACTIONS,
   OFFICIAL_PMDC_SOURCE_URL,
   PMDC_REVIEW_DECISIONS,
+  type FacilityReviewAction,
+  type GovernmentReviewAction,
+  type HajjReviewAction,
   type PmdcLicenseStatus,
   type PmdcReviewCaseDetail,
   type PmdcReviewDecisionName,
@@ -91,6 +97,22 @@ export function ReviewConsole() {
     reviewerLabel: "",
     notes: "",
     candidateId: "",
+  });
+  const [governmentForm, setGovernmentForm] = useState({
+    status: "government_record_historical" as GovernmentReviewAction,
+    notes: "",
+  });
+  const [facilityForm, setFacilityForm] = useState({
+    status: "needs_review" as FacilityReviewAction,
+    notes: "",
+    address: "",
+    officialPhone: "",
+    sourceUrl: "",
+  });
+  const [hajjForm, setHajjForm] = useState({
+    status: "not_verified" as HajjReviewAction,
+    notes: "",
+    sourceUrl: "",
   });
 
   const loadQueue = useCallback(async (accessToken: string) => {
@@ -216,6 +238,58 @@ export function ReviewConsole() {
     }
   };
 
+  const saveDimension = async (
+    path: string,
+    body: Record<string, unknown>,
+  ) => {
+    if (!token || !selectedId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const payload = await reviewFetch(path, token, {
+        method: "POST",
+        body: JSON.stringify({
+          ...body,
+          reviewerLabel: decisionForm.reviewerLabel,
+        }),
+      });
+      setDetail(payload.detail as PmdcReviewCaseDetail);
+      setQueue(await loadQueue(token));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Review update failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const saveGovernment = (event: React.FormEvent) => {
+    event.preventDefault();
+    return saveDimension(`/api/review/doctors/${selectedId}/government`, {
+      status: governmentForm.status,
+      notes: governmentForm.notes,
+    });
+  };
+
+  const saveFacility = (event: React.FormEvent) => {
+    event.preventDefault();
+    return saveDimension(`/api/review/doctors/${selectedId}/facility`, {
+      status: facilityForm.status,
+      notes: facilityForm.notes,
+      address: facilityForm.address || null,
+      officialPhone: facilityForm.officialPhone || null,
+      sourceUrl: facilityForm.sourceUrl || null,
+    });
+  };
+
+  const saveHajj = (event: React.FormEvent) => {
+    event.preventDefault();
+    return saveDimension(`/api/review/doctors/${selectedId}/hajj`, {
+      status: hajjForm.status,
+      notes: hajjForm.notes,
+      sourceUrl: hajjForm.sourceUrl || null,
+    });
+  };
+
   const saveDecision = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!token || !selectedId) return;
@@ -250,10 +324,10 @@ export function ReviewConsole() {
       <main className="review-shell">
         <form className="review-gate" onSubmit={unlock}>
           <ShieldCheck size={28} />
-          <h1>PMDC review queue</h1>
+          <h1>Doctor review queue</h1>
           <p>
             Internal reviewers only. This page is not part of the public
-            directory and never publishes unresolved PMDC data.
+            directory and never publishes unresolved PMDC or facility data.
           </p>
           <label>
             Review access token
@@ -279,10 +353,10 @@ export function ReviewConsole() {
       <header className="review-header">
         <div>
           <span className="kicker">Internal review</span>
-          <h1>PMDC verification queue</h1>
+          <h1>Doctor review queue</h1>
           <p>
-            Record official register findings here. Trusted PMDC fields are
-            written only after an explicit <b>verified</b> decision.
+            Review government, facility, PMDC, and Hajj status separately.
+            None of these actions publish a doctor on their own.
           </p>
         </div>
         <div className="review-counts">
@@ -345,6 +419,20 @@ export function ReviewConsole() {
                   <span>{statusLabel(detail.hajjAttestationStatus)}</span>
                 </article>
               </div>
+              <label>
+                Reviewer
+                <input
+                  suppressHydrationWarning
+                  value={decisionForm.reviewerLabel}
+                  onChange={(event) =>
+                    setDecisionForm((current) => ({
+                      ...current,
+                      reviewerLabel: event.target.value,
+                    }))
+                  }
+                  required
+                />
+              </label>
               <dl className="review-facts">
                 <div>
                   <dt>Father&apos;s name</dt>
@@ -390,6 +478,176 @@ export function ReviewConsole() {
                   Open government source <ExternalLink size={14} />
                 </a>
               )}
+            </section>
+
+            <section className="review-card">
+              <h3>Government posting</h3>
+              <dl className="review-facts">
+                <div>
+                  <dt>Facility</dt>
+                  <dd>{detail.posting?.facilityName ?? "Not recorded"}</dd>
+                </div>
+                <div>
+                  <dt>District / tehsil</dt>
+                  <dd>
+                    {detail.posting?.facilityDistrict ?? "Not recorded"}
+                    {detail.posting?.facilityTehsil
+                      ? ` / ${detail.posting.facilityTehsil}`
+                      : ""}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Posting status</dt>
+                  <dd>{statusLabel(detail.posting?.status ?? "unknown")}</dd>
+                </div>
+                <div>
+                  <dt>Current posting confirmed</dt>
+                  <dd>{detail.posting?.isCurrentConfirmed ? "Yes" : "No"}</dd>
+                </div>
+              </dl>
+              <form className="review-form" onSubmit={saveGovernment}>
+                <label>
+                  Government status
+                  <select
+                    suppressHydrationWarning
+                    value={governmentForm.status}
+                    onChange={(event) =>
+                      setGovernmentForm((current) => ({
+                        ...current,
+                        status: event.target.value as GovernmentReviewAction,
+                      }))
+                    }
+                  >
+                    {GOVERNMENT_REVIEW_ACTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {statusLabel(status)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="review-wide">
+                  Notes
+                  <textarea
+                    suppressHydrationWarning
+                    value={governmentForm.notes}
+                    onChange={(event) =>
+                      setGovernmentForm((current) => ({
+                        ...current,
+                        notes: event.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </label>
+                <button type="submit" disabled={busy || !decisionForm.reviewerLabel}>
+                  Update government status
+                </button>
+              </form>
+            </section>
+
+            <section className="review-card">
+              <h3>Facility</h3>
+              <dl className="review-facts">
+                <div>
+                  <dt>Name / type</dt>
+                  <dd>
+                    {detail.posting?.facilityName ?? "Not recorded"}
+                    {detail.posting?.facilityType
+                      ? ` · ${detail.posting.facilityType}`
+                      : ""}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Address</dt>
+                  <dd>{detail.posting?.facilityAddress ?? "Not recorded"}</dd>
+                </div>
+                <div>
+                  <dt>Phone</dt>
+                  <dd>{detail.posting?.facilityPhone ?? "Not recorded"}</dd>
+                </div>
+                <div>
+                  <dt>Source</dt>
+                  <dd>{detail.posting?.facilitySourceUrl ?? "Not recorded"}</dd>
+                </div>
+              </dl>
+              <form className="review-form" onSubmit={saveFacility}>
+                <label>
+                  Facility status
+                  <select
+                    suppressHydrationWarning
+                    value={facilityForm.status}
+                    onChange={(event) =>
+                      setFacilityForm((current) => ({
+                        ...current,
+                        status: event.target.value as FacilityReviewAction,
+                      }))
+                    }
+                  >
+                    {FACILITY_REVIEW_ACTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {statusLabel(status)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Sourced address
+                  <input
+                    suppressHydrationWarning
+                    value={facilityForm.address}
+                    onChange={(event) =>
+                      setFacilityForm((current) => ({
+                        ...current,
+                        address: event.target.value,
+                      }))
+                    }
+                    placeholder="Only from an official source"
+                  />
+                </label>
+                <label>
+                  Official phone
+                  <input
+                    suppressHydrationWarning
+                    value={facilityForm.officialPhone}
+                    onChange={(event) =>
+                      setFacilityForm((current) => ({
+                        ...current,
+                        officialPhone: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+                <label>
+                  Source URL
+                  <input
+                    suppressHydrationWarning
+                    value={facilityForm.sourceUrl}
+                    onChange={(event) =>
+                      setFacilityForm((current) => ({
+                        ...current,
+                        sourceUrl: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+                <label className="review-wide">
+                  Notes
+                  <textarea
+                    suppressHydrationWarning
+                    value={facilityForm.notes}
+                    onChange={(event) =>
+                      setFacilityForm((current) => ({
+                        ...current,
+                        notes: event.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </label>
+                <button type="submit" disabled={busy || !decisionForm.reviewerLabel}>
+                  Update facility status
+                </button>
+              </form>
             </section>
 
             <section className="review-card">
@@ -598,20 +856,6 @@ export function ReviewConsole() {
                     ))}
                   </select>
                 </label>
-                <label>
-                  Reviewer
-                  <input
-                    suppressHydrationWarning
-                    value={decisionForm.reviewerLabel}
-                    onChange={(event) =>
-                      setDecisionForm((current) => ({
-                        ...current,
-                        reviewerLabel: event.target.value,
-                      }))
-                    }
-                    required
-                  />
-                </label>
                 <label className="review-wide">
                   Notes
                   <textarea
@@ -635,6 +879,96 @@ export function ReviewConsole() {
                 Unmatched, ambiguous, needs more information, and rejected do
                 not. Government, facility, and Hajj statuses stay unchanged.
               </p>
+            </section>
+
+            <section className="review-card">
+              <h3>Hajj attestation</h3>
+              <p>
+                Current status: {statusLabel(detail.hajjAttestationStatus)}. This
+                does not publish the doctor.
+              </p>
+              <form className="review-form" onSubmit={saveHajj}>
+                <label>
+                  Hajj status
+                  <select
+                    suppressHydrationWarning
+                    value={hajjForm.status}
+                    onChange={(event) =>
+                      setHajjForm((current) => ({
+                        ...current,
+                        status: event.target.value as HajjReviewAction,
+                      }))
+                    }
+                  >
+                    {HAJJ_REVIEW_ACTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {statusLabel(status)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Evidence / source URL
+                  <input
+                    suppressHydrationWarning
+                    value={hajjForm.sourceUrl}
+                    onChange={(event) =>
+                      setHajjForm((current) => ({
+                        ...current,
+                        sourceUrl: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+                <label className="review-wide">
+                  Notes
+                  <textarea
+                    suppressHydrationWarning
+                    value={hajjForm.notes}
+                    onChange={(event) =>
+                      setHajjForm((current) => ({
+                        ...current,
+                        notes: event.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </label>
+                <button type="submit" disabled={busy || !decisionForm.reviewerLabel}>
+                  Update Hajj status
+                </button>
+              </form>
+              <ol className="review-history">
+                {detail.verificationEvents
+                  .filter((event) => event.verificationType === "hajj_attestation")
+                  .map((event) => (
+                    <li key={event.id}>
+                      <span className={`review-pill ${event.outcome}`}>
+                        {statusLabel(event.outcome)}
+                      </span>
+                      <small>{formatDateTime(event.checkedAt)}</small>
+                      <p>{String(event.evidence.notes ?? "")}</p>
+                    </li>
+                  ))}
+              </ol>
+            </section>
+
+            <section className="review-card">
+              <h3>Recent verification events</h3>
+              <ol className="review-history">
+                {detail.verificationEvents.map((event) => (
+                  <li key={event.id}>
+                    <span className={`review-pill ${event.outcome}`}>
+                      {statusLabel(event.verificationType)} · {statusLabel(event.outcome)}
+                    </span>
+                    <small>{formatDateTime(event.checkedAt)}</small>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+            <section className="review-card">
+              <h3>PMDC decision history</h3>
               <ol className="review-history">
                 {detail.decisions.map((decision) => (
                   <li key={decision.id}>

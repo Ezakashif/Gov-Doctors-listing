@@ -154,9 +154,9 @@ footer { padding: 60px 0 22px; color: #b5c9c3; background: #062f29; }
   .nav { height: 65px; }.brand { font-size: 18px; }.brand-mark { width: 35px; height: 35px; }
   .nav-links { position: absolute; display: none; left: 14px; right: 14px; top: 68px; flex-direction: column; align-items: stretch; gap: 0; padding: 10px; border: 1px solid #dfe8e4; border-radius: 12px; background: #fff; box-shadow: 0 18px 40px rgba(18,57,47,.15); }.nav-links.open { display: flex; }.nav-links a { padding: 13px 12px; }.menu-button { display: grid; place-items: center; cursor: pointer; }.language { font-size: 0; }
   .hero-grid { padding: 50px 0 55px; }.hero h1 { font-size: 43px; letter-spacing: -2px; }.hero-lead { font-size: 15px; }
-  .search-panel { grid-template-columns: 1fr; gap: 6px; }.search-control { padding: 7px 10px; border-right: 0; border-bottom: 1px solid #e5ece8; }.primary-button { min-height: 47px; margin: 0; }.hero-notes { gap: 10px 16px; }
+  .search-panel, .facility-search { grid-template-columns: 1fr; gap: 6px; }.search-control { padding: 7px 10px; border-right: 0; border-bottom: 1px solid #e5ece8; }.primary-button { min-height: 47px; margin: 0; }.hero-notes { gap: 10px 16px; }
   .section { padding: 65px 0; }.section-heading.split { align-items: flex-start; flex-direction: column; gap: 13px; }
-  .filter-bar { grid-template-columns: 1fr 1fr; }.filter-bar label:first-child { grid-column: 1 / -1; }.verified-filter { justify-content: center; }
+  .filter-bar, .facility-filters { grid-template-columns: 1fr 1fr; }.filter-bar label:first-child { grid-column: 1 / -1; }.verified-filter { justify-content: center; }
   .doctor-grid { grid-template-columns: 1fr; }.city-grid { grid-template-columns: 1fr 1fr; }
   .standards-grid { grid-template-columns: 1fr; }.standards-copy h2 { font-size: 36px; }.independence-card { padding: 29px; box-shadow: 10px 10px 0 #dfede7; }
   .cta-inner { min-height: 290px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 24px; }.cta h2 { font-size: 31px; }
@@ -213,7 +213,16 @@ footer { padding: 60px 0 22px; color: #b5c9c3; background: #062f29; }
 .review-pill.verified { color: #14624c; background: #def3ea; }
 .review-pill.unmatched { color: #455853; background: #e7eeeb; }
 .review-pill.ambiguous { color: #7a4b12; background: #f7e6cf; }
-.review-pill.rejected { color: #8a3b32; background: #fdecea; }
+.review-pill.rejected, .review-pill.not_verified { color: #8a3b32; background: #fdecea; }
+.review-pill.government_employment, .review-pill.facility_address, .review-pill.hajj_attestation { text-transform: none; }
+.facility-search { grid-template-columns: 1.45fr .9fr auto; }
+.facility-filters { grid-template-columns: 1.35fr .8fr .8fr auto; }
+.facility-doctors-heading { margin: 20px 0 8px; font-size: 14px; }
+.facility-doctors-empty { margin: 0; color: #6b7e78; font-size: 12px; line-height: 1.6; }
+.facility-doctors { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.facility-doctors li { display: grid; gap: 3px; padding: 10px 12px; border-radius: 10px; background: #f3f8f6; }
+.facility-doctors strong { font-size: 13px; }
+.facility-doctors span, .facility-doctors em { color: #667b75; font-size: 11px; font-style: normal; }
 
 @media (max-width: 900px) {
   .review-header, .review-layout, .review-dimensions, .review-facts, .review-form { grid-template-columns: 1fr; }

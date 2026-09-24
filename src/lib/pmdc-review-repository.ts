@@ -1,6 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   type AddPmdcCandidateInput,
+  type ApplyFacilityDecisionInput,
+  type ApplyGovernmentDecisionInput,
+  type ApplyHajjDecisionInput,
   type ApplyPmdcDecisionInput,
   type GovernmentEmploymentStatus,
   type HajjAttestationStatus,
@@ -11,9 +14,13 @@ import {
   type PmdcReviewDecision,
   type PmdcReviewDecisionName,
   type PmdcReviewQueueItem,
+  type ReviewEvent,
   MANUAL_REVIEW_METHOD,
   OFFICIAL_PMDC_SOURCE_NAME,
   OFFICIAL_PMDC_SOURCE_URL,
+  isFacilityReviewAction,
+  isGovernmentReviewAction,
+  isHajjReviewAction,
   isPmdcReviewDecision,
   mapDecisionToEventOutcome,
 } from "./pmdc-review";
@@ -53,9 +60,17 @@ type DoctorRow = {
 };
 
 type FacilityEmbed = {
+  id: string;
   name: string;
+  facility_type: string;
   address: string | null;
+  official_phone: string | null;
+  province: string | null;
+  district: string | null;
+  tehsil: string | null;
   verification_status: PmdcReviewQueueItem["facilityVerificationStatus"];
+  address_source_url: string | null;
+  last_verified_at: string | null;
 };
 
 type SourceEmbed = {
@@ -69,10 +84,19 @@ type PostingRow = {
   designation: string | null;
   government_employment_status: string;
   posting_as_of_date: string | null;
+  is_current_confirmed: boolean;
   source_record_key: string | null;
   source_evidence: Record<string, unknown> | null;
   facilities: FacilityEmbed | FacilityEmbed[] | null;
   sources: SourceEmbed | SourceEmbed[] | null;
+};
+
+type EventRow = {
+  id: string;
+  verification_type: string;
+  outcome: string;
+  checked_at: string;
+  evidence: Record<string, unknown> | null;
 };
 
 const asOne = <T>(value: T | T[] | null | undefined): T | null =>
@@ -262,6 +286,7 @@ export async function getPmdcReviewCase(
     { data: caseData, error: caseError },
     { data: candidateData, error: candidateError },
     { data: decisionData, error: decisionError },
+    { data: eventData, error: eventError },
   ] = await Promise.all([
     supabase
       .from("doctors")
@@ -273,7 +298,7 @@ export async function getPmdcReviewCase(
     supabase
       .from("doctor_postings")
       .select(
-        "id,designation,government_employment_status,posting_as_of_date,source_record_key,source_evidence,facilities(name,address,verification_status),sources(name,url,source_document_date)",
+        "id,designation,government_employment_status,posting_as_of_date,is_current_confirmed,source_record_key,source_evidence,facilities(id,name,facility_type,address,official_phone,province,district,tehsil,verification_status,address_source_url,last_verified_at),sources(name,url,source_document_date)",
       )
       .eq("doctor_id", doctorId)
       .eq("active", true)
@@ -305,6 +330,12 @@ export async function getPmdcReviewCase(
       )
       .eq("doctor_id", doctorId)
       .order("decided_at", { ascending: false }),
+    supabase
+      .from("verification_events")
+      .select("id,verification_type,outcome,checked_at,evidence")
+      .eq("doctor_id", doctorId)
+      .order("checked_at", { ascending: false })
+      .limit(20),
   ]);
 
   if (doctorError) throw doctorError;
@@ -313,6 +344,7 @@ export async function getPmdcReviewCase(
   if (caseError) throw caseError;
   if (candidateError) throw candidateError;
   if (decisionError) throw decisionError;
+  if (eventError) throw eventError;
 
   const doctor = requireData(
     doctorData as DoctorRow | null,
@@ -349,10 +381,19 @@ export async function getPmdcReviewCase(
           designation: posting.designation,
           status: posting.government_employment_status,
           asOfDate: posting.posting_as_of_date,
+          isCurrentConfirmed: posting.is_current_confirmed,
+          facilityId: asOne(posting.facilities)?.id ?? null,
           facilityName: asOne(posting.facilities)?.name ?? null,
+          facilityType: asOne(posting.facilities)?.facility_type ?? null,
           facilityAddress: asOne(posting.facilities)?.address ?? null,
+          facilityPhone: asOne(posting.facilities)?.official_phone ?? null,
+          facilityProvince: asOne(posting.facilities)?.province ?? null,
+          facilityDistrict: asOne(posting.facilities)?.district ?? null,
+          facilityTehsil: asOne(posting.facilities)?.tehsil ?? null,
           facilityVerificationStatus:
             asOne(posting.facilities)?.verification_status ?? null,
+          facilitySourceUrl: asOne(posting.facilities)?.address_source_url ?? null,
+          facilityLastVerifiedAt: asOne(posting.facilities)?.last_verified_at ?? null,
           sourceName: asOne(posting.sources)?.name ?? null,
           sourceUrl: asOne(posting.sources)?.url ?? null,
           sourceDocumentDate: asOne(posting.sources)?.source_document_date ?? null,
@@ -362,6 +403,13 @@ export async function getPmdcReviewCase(
       : null,
     candidates: ((candidateData ?? []) as CandidateRow[]).map(toCandidate),
     decisions: ((decisionData ?? []) as DecisionRow[]).map(toDecision),
+    verificationEvents: ((eventData ?? []) as EventRow[]).map((row) => ({
+      id: row.id,
+      verificationType: row.verification_type,
+      outcome: row.outcome,
+      checkedAt: row.checked_at,
+      evidence: row.evidence ?? {},
+    } satisfies ReviewEvent)),
   };
 }
 
@@ -552,6 +600,201 @@ export async function applyPmdcDecision(
   });
   if (eventError) throw eventError;
 
+  return getPmdcReviewCase(supabase, input.doctorId);
+}
+
+const getPostingSourceId = async (
+  supabase: SupabaseClient,
+  postingId: string,
+) => {
+  const { data, error } = await supabase
+    .from("doctor_postings")
+    .select("source_id")
+    .eq("id", postingId)
+    .single();
+  if (error) throw error;
+  return requireData(
+    (data as { source_id: string } | null)?.source_id ?? null,
+    "Posting source is missing.",
+  );
+};
+
+const requireReviewer = (label: string, notes: string) => {
+  const reviewerLabel = label.trim();
+  const trimmedNotes = notes.trim();
+  if (!reviewerLabel) throw new Error("A reviewer label is required.");
+  if (!trimmedNotes) throw new Error("Review notes are required.");
+  return { reviewerLabel, notes: trimmedNotes };
+};
+
+export async function applyGovernmentDecision(
+  supabase: SupabaseClient,
+  input: ApplyGovernmentDecisionInput,
+): Promise<PmdcReviewCaseDetail> {
+  if (!isGovernmentReviewAction(input.status)) {
+    throw new Error("Unsupported government review action.");
+  }
+  const { reviewerLabel, notes } = requireReviewer(
+    input.reviewerLabel,
+    input.notes,
+  );
+  const detail = await getPmdcReviewCase(supabase, input.doctorId);
+  if (!detail.posting) {
+    throw new Error("This doctor has no active government posting to review.");
+  }
+
+  const decidedAt = new Date().toISOString();
+  const isCurrent = input.status === "government_current_verified";
+  const { error: doctorError } = await supabase
+    .from("doctors")
+    .update({
+      government_employment_status: input.status,
+      updated_at: decidedAt,
+    })
+    .eq("id", input.doctorId);
+  if (doctorError) throw doctorError;
+
+  const { error: postingError } = await supabase
+    .from("doctor_postings")
+    .update({
+      government_employment_status: input.status,
+      is_current_confirmed: isCurrent,
+      updated_at: decidedAt,
+    })
+    .eq("id", detail.posting.id);
+  if (postingError) throw postingError;
+
+  const { error: eventError } = await supabase.from("verification_events").insert({
+    doctor_id: input.doctorId,
+    posting_id: detail.posting.id,
+    facility_id: detail.posting.facilityId,
+    source_id: await getPostingSourceId(supabase, detail.posting.id),
+    verification_type: "government_employment",
+    outcome: isCurrent || input.status === "government_record_historical"
+      ? "verified"
+      : "needs_review",
+    checked_at: decidedAt,
+    evidence: {
+      reviewerLabel,
+      notes,
+      status: input.status,
+      publicationUnchanged: true,
+      warning:
+        "Does not publish the doctor or confirm Hajj attestation eligibility.",
+    },
+  });
+  if (eventError) throw eventError;
+  return getPmdcReviewCase(supabase, input.doctorId);
+}
+
+export async function applyFacilityDecision(
+  supabase: SupabaseClient,
+  input: ApplyFacilityDecisionInput,
+): Promise<PmdcReviewCaseDetail> {
+  if (!isFacilityReviewAction(input.status)) {
+    throw new Error("Unsupported facility review action.");
+  }
+  const { reviewerLabel, notes } = requireReviewer(
+    input.reviewerLabel,
+    input.notes,
+  );
+  const detail = await getPmdcReviewCase(supabase, input.doctorId);
+  if (!detail.posting?.facilityId) {
+    throw new Error("This doctor has no facility to review.");
+  }
+
+  const address = blankToNull(input.address) ?? detail.posting.facilityAddress;
+  const officialPhone =
+    blankToNull(input.officialPhone) ?? detail.posting.facilityPhone;
+  const sourceUrl =
+    blankToNull(input.sourceUrl) ?? detail.posting.facilitySourceUrl;
+  if (input.status === "verified" && !address) {
+    throw new Error(
+      "A facility cannot be marked verified without a sourced address.",
+    );
+  }
+  if (input.status === "verified" && !sourceUrl) {
+    throw new Error(
+      "A facility cannot be marked verified without a source URL.",
+    );
+  }
+
+  const decidedAt = new Date().toISOString();
+  const { error: facilityError } = await supabase
+    .from("facilities")
+    .update({
+      address,
+      official_phone: officialPhone,
+      address_source_url: sourceUrl,
+      verification_status: input.status,
+      last_verified_at: input.status === "verified" ? decidedAt : null,
+      updated_at: decidedAt,
+    })
+    .eq("id", detail.posting.facilityId);
+  if (facilityError) throw facilityError;
+
+  const { error: eventError } = await supabase.from("verification_events").insert({
+    doctor_id: input.doctorId,
+    posting_id: detail.posting.id,
+    facility_id: detail.posting.facilityId,
+    source_id: await getPostingSourceId(supabase, detail.posting.id),
+    verification_type: "facility_address",
+    outcome: input.status === "verified" ? "verified" : "needs_review",
+    checked_at: decidedAt,
+    evidence: {
+      reviewerLabel,
+      notes,
+      status: input.status,
+      address,
+      officialPhone,
+      sourceUrl,
+    },
+  });
+  if (eventError) throw eventError;
+  return getPmdcReviewCase(supabase, input.doctorId);
+}
+
+export async function applyHajjDecision(
+  supabase: SupabaseClient,
+  input: ApplyHajjDecisionInput,
+): Promise<PmdcReviewCaseDetail> {
+  if (!isHajjReviewAction(input.status)) {
+    throw new Error("Unsupported Hajj review action.");
+  }
+  const { reviewerLabel, notes } = requireReviewer(
+    input.reviewerLabel,
+    input.notes,
+  );
+  const detail = await getPmdcReviewCase(supabase, input.doctorId);
+  const decidedAt = new Date().toISOString();
+  const { error: doctorError } = await supabase
+    .from("doctors")
+    .update({
+      hajj_attestation_status: input.status,
+      updated_at: decidedAt,
+    })
+    .eq("id", input.doctorId);
+  if (doctorError) throw doctorError;
+
+  const sourceId = detail.posting
+    ? await getPostingSourceId(supabase, detail.posting.id)
+    : (await getOfficialPmdcSource(supabase)).id;
+  const { error: eventError } = await supabase.from("verification_events").insert({
+    doctor_id: input.doctorId,
+    posting_id: detail.posting?.id ?? null,
+    facility_id: detail.posting?.facilityId ?? null,
+    source_id: sourceId,
+    verification_type: "hajj_attestation",
+    outcome: input.status,
+    checked_at: decidedAt,
+    evidence: {
+      reviewerLabel,
+      notes,
+      sourceUrl: blankToNull(input.sourceUrl),
+      publicationUnchanged: true,
+    },
+  });
+  if (eventError) throw eventError;
   return getPmdcReviewCase(supabase, input.doctorId);
 }
 
