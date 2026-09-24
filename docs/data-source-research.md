@@ -336,6 +336,8 @@ Minimum evidence that *has appeared* on recent official forms (still not a 2027 
 
 Do **not** decide 2027 eligibility by assumption. Do **not** change application Hajj status values in this phase.
 
+**Informal ministry conversation (24 September 2026):** the project operator spoke with a Ministry of Religious Affairs staff member, who said any government doctor can attest the pilgrim medical form if they have a PM&DC number. This is useful operational guidance and matches Hajj 2025 guidelines plus the PM&DC field on recent forms. It is **not** a published Hajj 2027 circular. Do not mark any doctor `Hajj attestation verified` from this conversation. Public copy may tell pilgrims to ask a government doctor with a valid PM&DC number and still confirm at the desk.
+
 ---
 
 ## G. Recommended data-acquisition strategy

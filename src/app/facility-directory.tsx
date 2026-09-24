@@ -139,8 +139,9 @@ export function FacilityDirectory({
             <div className="eyebrow"><ShieldCheck size={15} /> Hajj 2027 medical form support</div>
             <h1>Find a government facility <em>near you.</em></h1>
             <p className="hero-lead">
-              Start with a verified government hospital or clinic, then inquire
-              there about Hajj medical-form attestation.
+              Start with a verified government hospital or clinic. A government
+              doctor with a valid PM&amp;DC number can attest the form — confirm
+              at the desk and take the official Ministry form.
             </p>
             <div className="search-panel facility-search">
               <label className="search-control search-wide">
@@ -163,7 +164,7 @@ export function FacilityDirectory({
             <span className="purpose-icon"><FileCheck2 size={29} /></span>
             <span className="kicker">BEFORE YOU VISIT</span>
             <h2>Ask at the government facility</h2>
-            <p>Take the current Ministry-issued Hajj medical form and confirm at the official hospital desk whether a government doctor can attest it.</p>
+            <p>Take the current Ministry-issued Hajj medical form. Staff at the Ministry have said any government doctor can attest it if they have a valid PM&amp;DC number. Confirm at the hospital desk; the written Hajj 2027 instructions are not published yet.</p>
             <div className="purpose-checks">
               <span><Building2 size={18} /><b>Facility first</b> address and switchboard</span>
               <span><BadgeCheck size={18} /><b>Doctors</b> only when fully verified</span>
@@ -179,7 +180,7 @@ export function FacilityDirectory({
             <div>
               <span className="kicker">GOVERNMENT FACILITIES</span>
               <h2>Where to inquire about Hajj medical forms</h2>
-              <p>Only facilities with a sourced, verified address are listed. Unresolved PMDC candidates are never shown here.</p>
+              <p>Any listed government facility is a place to ask. Only addresses from official sources are published. Individual doctors appear only after a trusted PMDC match.</p>
             </div>
             <div className={`data-mode ${dataMode}`}><Database size={15} /> {dataMode === "database" ? "Connected directory" : "Sample records"}</div>
           </div>
@@ -264,7 +265,7 @@ export function FacilityDirectory({
         <div className="container footer-grid">
           <div><a className="brand footer-brand" href="#"><span className="brand-mark"><HeartPulse size={22} /></span><span>Sehat<span>Directory</span></span></a><p>An independent directory helping Pakistani pilgrims locate government medical facilities for Hajj medical forms.</p></div>
           <div><strong>Directory</strong><a href="#directory">Find a facility</a><a href="#standards">Verification standard</a></div>
-          <div><strong>Important</strong><p>Always confirm availability with the government facility and use the latest official Hajj medical form.</p></div>
+          <div><strong>Important</strong><p>Ask a government doctor with a valid PM&amp;DC number, confirm at the desk, and use the latest official Hajj medical form.</p></div>
           <div><strong>Emergency</strong><p>This directory is not an emergency service. Call <b>1122</b> or visit the nearest emergency department.</p></div>
         </div>
         <div className="container copyright"><span>© 2026 Sehat Directory Pakistan</span><span>Unofficial directory · Privacy · Corrections</span></div>
@@ -282,7 +283,7 @@ export function FacilityDirectory({
               <div><Phone /><span><small>OFFICIAL SWITCHBOARD</small><strong>{selected.facility.officialPhone ?? "Not available"}</strong></span></div>
               <div><FileCheck2 /><span><small>LAST CHECKED</small><strong>{formatDate(selected.facility.lastVerifiedAt)}</strong></span></div>
             </div>
-            <div className="confirm-note"><CircleAlert size={19} /><span><b>Call before travelling.</b> Ask the facility desk about current Hajj medical-form attestation.</span></div>
+            <div className="confirm-note"><CircleAlert size={19} /><span><b>Call before travelling.</b> Ask a government doctor with a valid PM&amp;DC number to attest the official form.</span></div>
             <h3 className="facility-doctors-heading">Verified doctors at this facility</h3>
             {selected.doctors.length === 0 ? (
               <p className="facility-doctors-empty">No doctor at this facility has passed every public verification check yet.</p>
