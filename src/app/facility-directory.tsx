@@ -170,7 +170,7 @@ export function FacilityDirectory({
             <div>
               <span className="kicker">GOVERNMENT FACILITIES</span>
               <h2>Search hospitals and clinics</h2>
-              <p>Only government facilities with a sourced, verified address are listed. Coverage is incomplete: Punjab is strongest, then a small set of KP and Islamabad hospitals.</p>
+              <p>Only government facilities with a sourced, verified address are listed. Coverage is incomplete: Punjab is strongest, then a small set of Sindh, KP, and Islamabad hospitals.</p>
             </div>
             <div className={`data-mode ${dataMode}`}><Database size={15} /> {dataMode === "database" ? "Connected directory" : "Sample records"}</div>
           </div>

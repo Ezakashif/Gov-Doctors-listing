@@ -220,5 +220,174 @@ export function curatedOfficialFacilities(): OfficialFacilityRecord[] {
     if (record) records.push(record);
   }
 
+  const sindhVerified: Array<{
+    name: string;
+    facilityType: string;
+    district: string;
+    city: string;
+    address: string;
+    officialPhone?: string | null;
+    sourceName: string;
+    sourceUrl: string;
+    authority: string;
+    notes: string;
+  }> = [
+    {
+      name: "Jinnah Postgraduate Medical Centre",
+      facilityType: "Government teaching hospital",
+      district: "Karachi",
+      city: "Karachi",
+      address: "Rafiqui Shaheed Road, Karachi-75510, Pakistan",
+      officialPhone: "+92-21-99201300",
+      sourceName: "Jinnah Postgraduate Medical Centre official contact page",
+      sourceUrl: "https://jpmc.edu.pk/contact.php",
+      authority: "Jinnah Postgraduate Medical Centre",
+      notes:
+        "Official JPMC contact page prints the address and switchboard. Also named on the Sindh Health Department teaching-hospital list.",
+    },
+    {
+      name: "Dr. Ruth K. M. Pfau, Civil Hospital Karachi",
+      facilityType: "Government teaching hospital",
+      district: "Karachi",
+      city: "Karachi",
+      address:
+        "Mission Rd, near Civil Hospital Masjid, New Labour Colony Nanakwara, Karachi, Sindh",
+      officialPhone: "021-99215740",
+      sourceName: "Civil Hospital Karachi official contact page",
+      sourceUrl: "https://www.chk.gov.pk/contact.php",
+      authority: "Dr. Ruth K. M. Pfau Civil Hospital Karachi",
+      notes:
+        "Official chk.gov.pk contact page prints the address and switchboard. Also named on the Sindh Health Department teaching-hospital list.",
+    },
+    {
+      name: "National Institute of Cardiovascular Diseases",
+      facilityType: "Government specialized hospital",
+      district: "Karachi",
+      city: "Karachi",
+      address: "Rafiqui (H.J.) Shaheed Road, Karachi-75510, Pakistan",
+      officialPhone: "+92-21-99201271-5",
+      sourceName: "NICVD official contact page",
+      sourceUrl: "https://nicvd.org/contact-us",
+      authority: "National Institute of Cardiovascular Diseases",
+      notes: "Official NICVD contact page prints the Karachi address and switchboard.",
+    },
+    {
+      name: "National Institute of Child Health",
+      facilityType: "Government teaching hospital",
+      district: "Karachi",
+      city: "Karachi",
+      address: "Rafiqui H.J. Shaheed Road, Karachi-75510, Pakistan",
+      officialPhone: "+92-21-99201261-3",
+      sourceName: "National Institute of Child Health official contact page",
+      sourceUrl: "https://nich.edu.pk/contact/",
+      authority: "National Institute of Child Health",
+      notes:
+        "Official NICH contact page prints the address and switchboard. Also named on the Sindh Health Department teaching-hospital list.",
+    },
+    {
+      name: "National Institute of Cardiovascular Diseases, Hyderabad",
+      facilityType: "Government specialized hospital",
+      district: "Hyderabad",
+      city: "Hyderabad",
+      address: "Qasimabad, Wadhu Wah Road, Hyderabad, Pakistan",
+      officialPhone: null,
+      sourceName: "NICVD Hyderabad official page",
+      sourceUrl:
+        "https://nicvd.org/national-institute-of-cardiovascular-diseases-hyderabad",
+      authority: "National Institute of Cardiovascular Diseases",
+      notes:
+        "Official NICVD page prints the Hyderabad satellite-centre address. No switchboard was printed on that page.",
+    },
+  ];
+
+  for (const facility of sindhVerified) {
+    const record = toOfficialFacility({
+      name: facility.name,
+      facilityType: facility.facilityType,
+      province: "Sindh",
+      district: facility.district,
+      tehsil: facility.city,
+      city: facility.city,
+      address: facility.address,
+      officialPhone: facility.officialPhone || null,
+      sourceName: facility.sourceName,
+      sourceUrl: facility.sourceUrl,
+      sourceType: "government_page",
+      authority: facility.authority,
+      notes: facility.notes,
+    });
+    if (record) records.push(record);
+  }
+
+  const sindhTeaching: Array<[string, string]> = [
+    ["Ghulam M Meher Medical College Hospital Sukkur", "Sukkur"],
+    ["Chandka Medical College Hospital Larkana", "Larkana"],
+    ["KMC Civil Hospital, Khairpur", "Khairpur"],
+    ["Peoples Medical College Hospital Nawabshah (SBA)", "Shaheed Benazirabad"],
+    ["Liaquat University Hospital Hyderabad", "Hyderabad"],
+  ];
+
+  for (const [name, district] of sindhTeaching) {
+    const record = toOfficialFacility({
+      name,
+      facilityType: "Government teaching hospital",
+      province: "Sindh",
+      district,
+      tehsil: district,
+      city: district,
+      sourceName: "Sindh Health Department teaching hospitals list",
+      sourceUrl: "https://health.sindh.gov.pk/teaching-hospitals",
+      sourceType: "government_page",
+      authority: "Health Department, Government of Sindh",
+      notes:
+        "Official Sindh Health Department teaching-hospital name list. The page does not print a street address.",
+    });
+    if (record) records.push(record);
+  }
+
+  const sindhHyderabad2024: Array<[string, string]> = [
+    ["Sindh Government Hospital Paretabad", "Hyderabad"],
+    ["Sindh Government Hospital Qasimabad", "Hyderabad"],
+    ["Services Hospital Hyderabad", "Hyderabad"],
+    ["Sindh Government Hospital Shah Bhitai", "Hyderabad"],
+    ["Sindh Government Hospital Hazrat Khadija Latifabad", "Hyderabad"],
+  ];
+
+  for (const [name, district] of sindhHyderabad2024) {
+    const record = toOfficialFacility({
+      name,
+      facilityType: "Government hospital",
+      province: "Sindh",
+      district,
+      tehsil: district,
+      city: district,
+      sourceName: "Sindh Health Department health facilities 2024 (Hyderabad)",
+      sourceUrl: "https://health.sindh.gov.pk/information-of-health-facilities-hyderabad",
+      sourceType: "government_page",
+      authority: "Health Department, Government of Sindh",
+      sourceDocumentDate: "2024-01-01",
+      notes:
+        "Official 2024 Hyderabad facility table names this hospital. The table does not print a street address.",
+    });
+    if (record) records.push(record);
+  }
+
+  const badin = toOfficialFacility({
+    name: "Civil Hospital Badin (Indus)",
+    facilityType: "Government district headquarters hospital",
+    province: "Sindh",
+    district: "Badin",
+    tehsil: "Badin",
+    city: "Badin",
+    sourceName: "Sindh Health Department health facilities 2024 (Badin)",
+    sourceUrl: "https://health.sindh.gov.pk/information-of-health-facilities-badin-2024",
+    sourceType: "government_page",
+    authority: "Health Department, Government of Sindh",
+    sourceDocumentDate: "2024-01-01",
+    notes:
+      "Official 2024 Badin facility table names this DHQ. The table does not print a street address.",
+  });
+  if (badin) records.push(badin);
+
   return records.filter((record): record is OfficialFacilityRecord => Boolean(keep(record)));
 }

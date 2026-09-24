@@ -4,6 +4,7 @@ import { loadEnvConfig } from "@next/env";
 import type { WebSocketLikeConstructor } from "@supabase/realtime-js";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import WebSocket from "ws";
+import { curatedOfficialFacilities } from "./official-facilities-extras";
 import { IMPORT_BATCH, RETRIEVED_AT, normalizeKey, slugify } from "./official-facilities-lib";
 import type {
   OfficialFacilityDataset,
@@ -37,7 +38,19 @@ async function loadDataset() {
     "imports",
     "official-facility-registry-2026.json",
   );
-  return JSON.parse(await readFile(filePath, "utf8")) as OfficialFacilityDataset;
+  const dataset = JSON.parse(await readFile(filePath, "utf8")) as OfficialFacilityDataset;
+  const seen = new Set(
+    dataset.records.map((record) =>
+      identityKey(record.name, record.district, record.province),
+    ),
+  );
+  for (const record of curatedOfficialFacilities()) {
+    const key = identityKey(record.name, record.district, record.province);
+    if (seen.has(key)) continue;
+    dataset.records.push(record);
+    seen.add(key);
+  }
+  return dataset;
 }
 
 async function ensureSource(
@@ -144,10 +157,24 @@ async function run() {
     hajjVerified: await count(supabase, "doctors", "hajj_attestation_status", "verified"),
   };
 
-  const { data: existingFacilities, error: existingError } = await supabase
-    .from("facilities")
-    .select("id,name,district,province,slug,verification_status");
-  if (existingError) throw existingError;
+  const existingFacilities: Array<{
+    id: string;
+    name: string;
+    district: string | null;
+    province: string | null;
+    slug: string;
+    verification_status: string;
+  }> = [];
+  const existingPageSize = 1000;
+  for (let from = 0; ; from += existingPageSize) {
+    const { data, error: existingError } = await supabase
+      .from("facilities")
+      .select("id,name,district,province,slug,verification_status")
+      .range(from, from + existingPageSize - 1);
+    if (existingError) throw existingError;
+    existingFacilities.push(...(data ?? []));
+    if (!data || data.length < existingPageSize) break;
+  }
 
   const existingByIdentity = new Map(
     (existingFacilities ?? []).map((row) => [
@@ -272,7 +299,12 @@ async function run() {
       for (const record of chunk) {
         errors.push({
           key: record.sourceRecordKey,
-          message: error instanceof Error ? error.message : "Unknown import error",
+          message:
+            error instanceof Error
+              ? error.message
+              : typeof error === "object" && error && "message" in error
+                ? String((error as { message: unknown }).message)
+                : JSON.stringify(error),
         });
       }
     }
