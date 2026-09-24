@@ -1,0 +1,204 @@
+{
+  "sourceName": "Sindh government hospitals directory (provided PDF)",
+  "sourceUrl": "local:sindh_government_hospitals_directory_verified.pdf",
+  "authority": "Compiled Sindh hospital directory provided for import",
+  "retrievedAt": "2026-09-24",
+  "hospitals": [
+    {
+      "district": "Karachi",
+      "name": "Jinnah Postgraduate Medical Centre",
+      "phone": "+92-21-99201300",
+      "address": "Rafiqui Shaheed Road, Karachi-75510",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Dr. Ruth K. M. Pfau, Civil Hospital Karachi",
+      "phone": "+92-21-99215740",
+      "address": "Mission Road, near Civil Hospital Masjid, Karachi",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "National Institute of Cardiovascular Diseases",
+      "phone": "+92-21-99201271-5",
+      "address": "Rafiqui / H.J. Abbasi Shaheed Road, Karachi-75510",
+      "facilityType": "Government specialized hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "National Institute of Child Health",
+      "phone": "+92-21-99201261-3",
+      "address": "National Institute of Child Health, Karachi-75500",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Institute of Urology and Transplantation",
+      "phone": "021-32726210",
+      "address": "Karachi",
+      "facilityType": "Government specialized hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital Liaquatabad",
+      "phone": null,
+      "address": "Sharifabad Block 1, Gulberg Town, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital New Karachi",
+      "phone": null,
+      "address": "Plot ST-26, Sector 11-I, North Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital Korangi",
+      "phone": null,
+      "address": "Korangi No. 5 Road, Sector 35-E, Landhi Town, Karachi-74900",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital Ibrahim Hyderi",
+      "phone": null,
+      "address": "Ibrahim Hyderi, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital Murad Memon Goth",
+      "phone": "+92-340-0251479",
+      "address": "Near Jamot Muhalla, Memon Goth, Gadap Town, Karachi-75040",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Children Hospital",
+      "phone": "+92-21-36408930",
+      "address": "Shadman Town Sector 14-B, near Nagan Chowrangi / Anda Mor, Karachi-74600",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Infectious Disease Hospital & Research Center",
+      "phone": "+92-21-99244711",
+      "address": "NIPA Flyover, Block 10, Gulshan-e-Iqbal, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Police Hospital Karachi",
+      "phone": "+92-21-99216053",
+      "address": "Mesham Lea Road, Gazdarabad Police Headquarters, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Services Hospital",
+      "phone": "+92-21-99215789",
+      "address": "Jamia Cloth Market, Muhammad Ali Jinnah Road, Karachi",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Karachi",
+      "name": "Sindh Government Hospital Shah Faisal Town",
+      "phone": null,
+      "address": "Shah Faisal Colony, Shah Faisal Town, Karachi-75230",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Hyderabad",
+      "name": "Liaquat University Hospital",
+      "phone": "+92-303-0310273",
+      "address": "Market Road, UC-03 C-City-01, near Liberty Chowk, Heerabad, Hyderabad",
+      "facilityType": "Government teaching hospital"
+    },
+    {
+      "district": "Hyderabad",
+      "name": "Sindh Government Hospital Paretabad",
+      "phone": null,
+      "address": "Phuleli / Paretabad, Hyderabad",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Hyderabad",
+      "name": "Sindh Government Hospital Qasimabad",
+      "phone": "+92-22-3264047",
+      "address": "Wadhu Wah Road, Qasimabad, Hyderabad",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Hyderabad",
+      "name": "Services Hospital Hyderabad",
+      "phone": "+92-22-9240115",
+      "address": "Unit No. 5 Road, Phase-I, Latifabad, Hyderabad-71000",
+      "facilityType": "Government hospital"
+    },
+    {
+      "district": "Sukkur",
+      "name": "Civil Hospital Sukkur",
+      "phone": "071-931027",
+      "address": "Civil Hospital Road, Sukkur",
+      "facilityType": "Government civil hospital"
+    },
+    {
+      "district": "Larkana",
+      "name": "Civil Hospital Larkana",
+      "phone": "+92-335-6559909",
+      "address": "Jail Road, Larkana",
+      "facilityType": "Government civil hospital"
+    },
+    {
+      "district": "Badin",
+      "name": "Civil Hospital Badin (Indus)",
+      "phone": null,
+      "address": "Badin city, District Badin",
+      "facilityType": "Government district headquarters hospital"
+    },
+    {
+      "district": "Dadu",
+      "name": "Civil Hospital Dadu / DHQ",
+      "phone": null,
+      "address": "Dadu city, District Dadu",
+      "facilityType": "Government district headquarters hospital"
+    },
+    {
+      "district": "Dadu",
+      "name": "THQ Hospital Mehar",
+      "phone": null,
+      "address": "Mehar, District Dadu",
+      "facilityType": "Government tehsil headquarters hospital"
+    },
+    {
+      "district": "Dadu",
+      "name": "THQ Hospital K.N. Shah",
+      "phone": null,
+      "address": "K.N. Shah, District Dadu",
+      "facilityType": "Government tehsil headquarters hospital"
+    },
+    {
+      "district": "Matiari",
+      "name": "Taluka Hospital Hala",
+      "phone": null,
+      "address": "Hala, District Matiari",
+      "facilityType": "Government tehsil headquarters hospital"
+    },
+    {
+      "district": "Matiari",
+      "name": "Trauma Centre Hala",
+      "phone": null,
+      "address": "Hala, District Matiari",
+      "facilityType": "Government trauma centre"
+    },
+    {
+      "district": "Matiari",
+      "name": "Trauma Centre Bhit Shah",
+      "phone": null,
+      "address": "Bhit Shah, District Matiari",
+      "facilityType": "Government trauma centre"
+    }
+  ]
+}
