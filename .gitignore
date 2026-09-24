@@ -27,3 +27,6 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+
+# Temporary official-source downloads used to build the facility registry
+/data/imports/official-raw/

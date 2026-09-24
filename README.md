@@ -115,6 +115,16 @@ supports an address. Unconfirmed addresses and phone numbers remain `NULL`.
 npm run review:facilities
 ```
 
+Official public facility directories can be compiled and imported without touching doctors or Hajj statuses:
+
+```bash
+npm run ingest:facilities:build
+npm run ingest:facilities:dry
+npm run ingest:facilities
+```
+
+The builder reads official Punjab Health Department Excel exports plus curated official ICT, Balochistan, and Punjab tertiary name lists. A facility is marked `verified` only when the same official source prints a usable address. Existing KP pilot records are left unchanged. See `docs/data-source-research.md` and `docs/data-access-requests.md`.
+
 The internal review console at `/review` can update government, facility, PMDC,
 and Hajj statuses separately. None of those actions alone publishes a doctor.
 

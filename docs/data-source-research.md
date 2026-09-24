@@ -1,6 +1,6 @@
 # Official data-source research
 
-**Research type:** documentation only. No doctors or facilities were imported. No Supabase schema, existing records, public-visibility rules, PMDC numbers, or Hajj statuses were changed.
+**Research type:** documentation, then a facilities-only import on 24 September 2026. Doctors, PMDC numbers, Hajj statuses, public-doctor rules, and the existing KP pilot records were not changed. The import used official public directories only.
 
 **Research / website access date:** 23 September 2026.
 
@@ -480,3 +480,26 @@ At the end of this research phase:
 - No scraping or import scripts added to the repository
 
 The only new file intended from this phase is this document.
+
+---
+
+## Addendum — facilities-only import (24 September 2026)
+
+The recommended next phase was authorised and run as a facilities-only official registry import. No doctors, PMDC numbers, or Hajj statuses were added or changed.
+
+| Metric | Before | After |
+| ------ | ------ | ----- |
+| Doctors | 25 | 25 |
+| Public doctors | 0 | 0 |
+| Trusted PMDC matches | 0 | 0 |
+| Hajj verified | 0 | 0 |
+| Facilities | 22 | 5777 |
+| Public facilities | 8 | 2183 |
+| Verified facilities | 8 | 2183 |
+| Needs-review facilities | 14 | 3594 |
+
+Import batch `official-facility-registry-2026`: 5755 inserted, 0 skipped, 0 errors. Existing KP pilot facilities were not overwritten.
+
+Public directory after import (verified + usable official address only): Punjab 2174, ICT 1 (Federal Government Polyclinic), KP 8 (unchanged pilot), Balochistan 0. PIMS, ICT DHO names, Punjab tertiary names without street addresses, and the Balochistan MS list stay internal `needs_review`.
+
+Not imported: remaining KP doctors, other-province doctors, Sindh (GIS / broken official list), AJK, GB, KP province-wide position-list dump (Bannu BHU page 404 on access date), Punjab dispensaries export (404). Draft letters are in `docs/data-access-requests.md` and were not sent.

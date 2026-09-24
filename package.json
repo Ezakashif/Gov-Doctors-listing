@@ -17,7 +17,10 @@
     "review:pmdc:seed": "tsx scripts/pmdc-review.ts --seed",
     "review:pmdc:demo": "tsx scripts/pmdc-review.ts --demo",
     "verify:pmdc-review": "tsx scripts/verify-pmdc-review.ts",
-    "review:facilities": "tsx scripts/review-facilities.ts"
+    "review:facilities": "tsx scripts/review-facilities.ts",
+    "ingest:facilities:build": "tsx scripts/ingest/official-facilities-build.ts",
+    "ingest:facilities:dry": "tsx scripts/ingest/official-facilities.ts",
+    "ingest:facilities": "tsx scripts/ingest/official-facilities.ts --commit"
   },
   "dependencies": {
     "@supabase/realtime-js": "^2.109.0",
